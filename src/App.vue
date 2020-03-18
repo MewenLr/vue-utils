@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <button @click="addOption">Button</button>
     <Multiselect
       label="BusinessName"
       :clearable="true"
@@ -35,6 +36,16 @@ export default {
       },
     ],
   }),
+  methods: {
+    addOption() {
+      const id = Math.floor(Math.random() * 999999)
+      this.list.push({
+        id,
+        BusinessName: 'AirWave Limited',
+        Adress: '3 avenue Saint Martin',
+      })
+    },
+  },
 }
 </script>
 

@@ -11,6 +11,7 @@
       placeholder="Point de facturation"
     >
     <ul
+      ref="list"
       class="multiselect__list"
       v-show="isSelectVisible"
       @scroll="reachBottom"
@@ -30,28 +31,6 @@
 <script>
 export default {
   name: 'Multiselect',
-  directives: { // TODO: outsource to a global Command/ directives file
-    'click-outside': {
-      bind: (el, binding, vNode) => {
-        if (typeof binding.value !== 'function') {
-          const compName = vNode.context.name
-          let warn = `[Vue-click-outside:] provided expression '${binding.expression}' is not a function, but has to be`
-          if (compName) { warn += `Found in component '${compName}'` }
-          console.warn(warn)
-        }
-        const { bubble } = binding.modifiers
-        const handler = (e) => {
-          if (bubble || (!el.contains(e.target) && el !== e.target)) binding.value(e)
-        }
-        el.clickOutsideAction = handler
-        document.addEventListener('click', handler)
-      },
-      unbind: (el) => {
-        document.removeEventListener('click', el.clickOutsideAction)
-        el.clickOutsideAction = null
-      },
-    },
-  }, // end TODO
   props: {
     label: { type: String, required: true },
     options: { type: Array, required: true },
@@ -89,9 +68,8 @@ export default {
       this.$emit('select-option', option)
     },
     reachBottom() {
-      const { dropselectList } = this.$refs
-      const threshold = dropselectList.scrollHeight - dropselectList.offsetHeight
-      if (dropselectList.scrollTop === threshold) this.$emit('reach-bottom')
+      const threshold = this.$refs.list.scrollHeight - this.$refs.list.offsetHeight
+      if (this.$refs.list.scrollTop >= threshold) this.$emit('reach-bottom')
     },
   },
 }
