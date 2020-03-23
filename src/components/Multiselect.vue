@@ -2,13 +2,15 @@
   <div
     class="multiselect"
     :class="{ 'multiselect--visible': isSelectVisible }"
-    @click="openMultiselect"
-    v-click-outside="closeMultiselect"
+    @click.self="toggleMultiselect(!isSelectVisible)"
+    v-click-outside.present="toggleMultiselect.bind(null, false)"
   >
     <input
       ref="input"
       class="multiselect__input"
       placeholder="Point de facturation"
+      @click="toggleMultiselect(true)"
+      @keyup="filterOption($event.target.value)"
     >
     <ul
       ref="list"
@@ -55,11 +57,8 @@ export default {
     },
   },
   methods: {
-    openMultiselect() {
-      this.isSelectVisible = true
-    },
-    closeMultiselect() {
-      this.isSelectVisible = false
+    toggleMultiselect(visible) {
+      this.isSelectVisible = visible
     },
     selectOption(option) {
       if (option[this.label] === this.defaultMsg) this.inputValue = ''
@@ -71,20 +70,30 @@ export default {
       const threshold = this.$refs.list.scrollHeight - this.$refs.list.offsetHeight
       if (this.$refs.list.scrollTop >= threshold) this.$emit('reach-bottom')
     },
+    filterOption(searchedOption) {
+      console.log(searchedOption)
+      const computOptions = this.listOptions.map((opt) => {
+        console.log('here is opt >>', opt[this.label])
+        // return opt[this.label].match(`/^[${searchedOption}]+/g`) ? opt : false
+        console.log('here is regex >>', /^[Annuler]+/g.test(opt[this.label]))
+        return /^[Annuler]+/g.test(opt[this.label]) ? opt : false
+      })
+      console.log('here is computOptions >>', computOptions)
+      // searchedOption
+      // this.listOptions.map(e)
+      // option.match(`/^[${searchedOption}]+/g`)
+      // return
+    },
   },
 }
 </script>
 
 <style lang="scss">
 .multiselect {
-  width: 150px;
   cursor: pointer;
-  min-height: 40px;
   position: relative;
   background: #fff;
-  border-radius: 20px;
-  display: inline-block;
-  padding: 8px 40px 0px 8px;
+  border-radius: 5px;
   border: 1px solid #e8e8e8;
   transition: border linear .1s;
 
@@ -95,19 +104,17 @@ export default {
   &::after {
     top: 0;
     right: 0;
-    z-index: 50;
-    width: 40px;
-    height: 40px;
+    height: 100%;
+    content: '▼';
     color: gray;
-    content: '>';
     display: flex;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
     position: absolute;
+    margin-right: 15px;
     align-items: center;
     pointer-events: none;
     justify-content: center;
-    transform: rotate(90deg);
     transition: transform linear .1s;
     font-family: monospace, sans-serif;
   }
@@ -115,19 +122,20 @@ export default {
   &--visible {
 
     &::after {
-      transform: rotate(-90deg);
+      transform: rotate(180deg);
     }
   }
 
   &__input {
-    margin: 0;
     border: none;
     outline: none;
-    display: block;
     cursor: pointer;
     font-size: 14px;
     padding-left: 5px;
+    margin-right:40px;
+    border-radius: 5px;
     position: relative;
+    padding: 8px 0 8px 8px;
     font-family: Montserrat, sans-serif;
 
     &:focus {
@@ -136,25 +144,25 @@ export default {
   }
 
   &__list {
+    margin: 0;
     z-index: 1;
-    width: 120%;
-    height: 250px;
-    padding: 10px;
     overflow: auto;
+    padding: 10px 0;
+    max-height: 250px;
     position: absolute;
     border-radius: 10px;
     top: calc(100% + 10px);
+    width: calc(100% - 20px);
     background-color: #fff;
     box-shadow: 0 0 10px 0 #b2b2b2;
 
     &__option {
-      color: black;
-      padding: 8px;
-      color: #1482c5;
       display: block;
       cursor: pointer;
       font-size: 14px;
+      color: #1482c5;
       overflow: hidden;
+      padding: 10px 20px;
       white-space: nowrap;
       text-decoration: none;
       text-overflow: ellipsis;

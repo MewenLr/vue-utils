@@ -1,10 +1,11 @@
 <template>
   <div id="app">
-    <button @click="addOption">Button</button>
+    <button @click="addOption">Add Option</button>
+    <br>
     <Multiselect
       label="BusinessName"
-      :clearable="true"
       :options="list"
+      :clearable="true"
     />
   </div>
 </template>
@@ -58,8 +59,9 @@ body {
   height: 100vh;
   display: flex;
   align-items: center;
+  flex-direction: column;
   justify-content: center;
-  background-color: #2c3e50;
+  background-color: lightblue;
   font-family: Avenir, Helvetica, Arial, sans-serif;
 }
 </style>
