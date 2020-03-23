@@ -2,23 +2,26 @@
   <div id="app">
     <button @click="addOption">Add Option</button>
     <br>
-    <Multiselect
+    <button @click="toggleClearable">Toggle clearable</button>
+    <br>
+    <Dropselect
       label="BusinessName"
       :options="list"
-      :clearable="true"
+      :clearable="clear"
     />
   </div>
 </template>
 
 <script>
-import Multiselect from '@/components/Multiselect.vue'
+import Dropselect from '@/components/Dropselect.vue'
 
 export default {
   name: 'App',
   components: {
-    Multiselect,
+    Dropselect,
   },
   data: () => ({
+    clear: true,
     list: [
       {
         id: 1,
@@ -45,6 +48,9 @@ export default {
         BusinessName: 'AirWave Limited',
         Adress: '3 avenue Saint Martin',
       })
+    },
+    toggleClearable() {
+      this.clear = !this.clear
     },
   },
 }

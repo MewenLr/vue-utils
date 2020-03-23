@@ -11,8 +11,9 @@ module.exports = {
     parser: 'babel-eslint',
   },
   rules: {
-    semi: ['error', 'never'],
-    quotes: ['error', 'single'],
+    'linebreak-style': 'off',
+    'semi': ['error', 'never'],
+    'quotes': ['error', 'single'],
     'max-len': ['error', { code: 120 }],
     'no-param-reassign': ['error', { props: false }],
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',

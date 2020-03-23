@@ -1,27 +1,29 @@
 <template>
   <div
-    class="multiselect"
-    :class="{ 'multiselect--visible': isSelectVisible }"
-    @click.self="toggleMultiselect(!isSelectVisible)"
-    v-click-outside.present="toggleMultiselect.bind(null, false)"
+    class="dropselect"
+    :class="{ 'dropselect--visible': isOptionsVisible }"
+    @click.self="toggleDropselect(!isOptionsVisible)"
+    v-click-outside.present="toggleDropselect.bind(null, false)"
   >
     <input
       ref="input"
-      class="multiselect__input"
+      class="dropselect__input"
       placeholder="Point de facturation"
-      @click="toggleMultiselect(true)"
-      @keyup="filterOption($event.target.value)"
+      @keyup="arrowHover($event)"
+      @click="toggleDropselect(true)"
     >
     <ul
       ref="list"
-      class="multiselect__list"
-      v-show="isSelectVisible"
+      class="dropselect__list"
+      v-show="isOptionsVisible"
       @scroll="reachBottom"
     >
       <li
-        class="multiselect__list__option"
-        v-for="option in listOptions"
+        class="dropselect__list__option"
+        v-for="(option, index) in listOptions"
         :key="option.id"
+        :class="{ 'dropselect__list__option--hover': optionHovered === index}"
+        @mouseenter="mouseHover(index)"
         @click.stop="selectOption(option)"
       >
         {{ option[label] }}
@@ -32,7 +34,7 @@
 
 <script>
 export default {
-  name: 'Multiselect',
+  name: 'Dropselect',
   props: {
     label: { type: String, required: true },
     options: { type: Array, required: true },
@@ -40,56 +42,71 @@ export default {
   },
   data: () => ({
     inputValue: '',
-    isSelectVisible: false,
+    searchedOptions: null,
+    isOptionsVisible: false,
+    optionHovered: undefined,
     defaultMsg: 'Annuler la sélection',
   }),
   computed: {
     listOptions() {
-      const defaultObj = {}
-      defaultObj[this.label] = this.defaultMsg
-      return this.clearable ? [defaultObj, ...this.options] : this.options
+      if (this.searchedOptions) return this.searchedOptions
+      return this.clearable ? [{ [this.label]: this.defaultMsg }, ...this.options] : this.options
     },
   },
   watch: {
-    isSelectVisible(newVal) {
+    isOptionsVisible(newVal) {
       if (newVal) this.$refs.input.value = ''
       else this.$refs.input.value = this.inputValue
     },
   },
   methods: {
-    toggleMultiselect(visible) {
-      this.isSelectVisible = visible
+    toggleDropselect(visible) {
+      if (visible) this.$refs.input.focus()
+      else {
+        this.$refs.input.blur()
+        this.searchedOptions = null
+        this.optionHovered = undefined
+      }
+      this.isOptionsVisible = visible
     },
     selectOption(option) {
       if (option[this.label] === this.defaultMsg) this.inputValue = ''
       else this.inputValue = option[this.label]
-      this.isSelectVisible = false
+      this.toggleDropselect(false)
       this.$emit('select-option', option)
+    },
+    arrowHover(event) {
+      // key === arrow-bottom
+      if (event.keyCode === 40 && this.optionHovered === undefined) this.optionHovered = 0
+      else if (event.keyCode === 40 && this.optionHovered < (this.listOptions.length - 1)) this.optionHovered += 1
+      // key === arrow-up
+      else if (event.keyCode === 38 && this.optionHovered > 0) this.optionHovered -= 1
+      // key === enter
+      else if (event.keyCode === 13) this.selectOption(this.listOptions[this.optionHovered])
+      // key === escape
+      else if (event.keyCode === 27) this.toggleDropselect(false)
+      // key !== shift, ctrl, alt && arrows
+      else if (!(event.keyCode >= 16 && event.keyCode <= 18) && !(event.keyCode >= 37 && event.keyCode <= 40)) {
+        const { value } = event.target
+        const re = new RegExp(`^(${value})`, 'gi')
+        this.searchedOptions = this.options.filter((opt) => (opt[this.label].match(re) ? opt : false)).map((opt) => opt)
+        this.optionHovered = undefined
+        if (this.searchedOptions.length === this.options.length) this.searchedOptions = null
+      }
+    },
+    mouseHover(index) {
+      this.optionHovered = index
     },
     reachBottom() {
       const threshold = this.$refs.list.scrollHeight - this.$refs.list.offsetHeight
       if (this.$refs.list.scrollTop >= threshold) this.$emit('reach-bottom')
-    },
-    filterOption(searchedOption) {
-      console.log(searchedOption)
-      const computOptions = this.listOptions.map((opt) => {
-        console.log('here is opt >>', opt[this.label])
-        // return opt[this.label].match(`/^[${searchedOption}]+/g`) ? opt : false
-        console.log('here is regex >>', /^[Annuler]+/g.test(opt[this.label]))
-        return /^[Annuler]+/g.test(opt[this.label]) ? opt : false
-      })
-      console.log('here is computOptions >>', computOptions)
-      // searchedOption
-      // this.listOptions.map(e)
-      // option.match(`/^[${searchedOption}]+/g`)
-      // return
     },
   },
 }
 </script>
 
 <style lang="scss">
-.multiselect {
+.dropselect {
   cursor: pointer;
   position: relative;
   background: #fff;
@@ -146,13 +163,13 @@ export default {
   &__list {
     margin: 0;
     z-index: 1;
+    width: 100%;
     overflow: auto;
     padding: 10px 0;
     max-height: 250px;
     position: absolute;
     border-radius: 10px;
     top: calc(100% + 10px);
-    width: calc(100% - 20px);
     background-color: #fff;
     box-shadow: 0 0 10px 0 #b2b2b2;
 
@@ -167,7 +184,7 @@ export default {
       text-decoration: none;
       text-overflow: ellipsis;
 
-      &:hover {
+      &--hover {
         background: #e6e6e6;
       }
     }
