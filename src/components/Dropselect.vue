@@ -1,35 +1,28 @@
-<template>
-  <div
-    class="dropselect"
+<template lang="pug">
+  .dropselect(
+    v-click-outside.present="toggleDropselect.bind(null, false)"
     :class="{ 'dropselect--visible': isOptionsVisible }"
     @click.self="toggleDropselect(!isOptionsVisible)"
-    v-click-outside.present="toggleDropselect.bind(null, false)"
-  >
-    <input
+  )
+    input.dropselect_input(
       ref="input"
-      class="dropselect__input"
       placeholder="Point de facturation"
       @keyup="arrowHover($event)"
       @click="toggleDropselect(true)"
-    >
-    <ul
+    )
+    ul.dropselect_list(
       ref="list"
-      class="dropselect__list"
       v-show="isOptionsVisible"
       @scroll="reachBottom"
-    >
-      <li
-        class="dropselect__list__option"
+    )
+      li.dropselect_list_option(
         v-for="(option, index) in listOptions"
         :key="option.id"
-        :class="{ 'dropselect__list__option--hover': optionHovered === index}"
+        :class="{ 'dropselect_list_option--hover': optionHovered === index}"
         @mouseenter="mouseHover(index)"
         @click.stop="selectOption(option)"
-      >
-        {{ option[label] }}
-      </li>
-    </ul>
-  </div>
+      )
+        | {{ option[label] }}
 </template>
 
 <script>
@@ -105,89 +98,80 @@ export default {
 }
 </script>
 
-<style lang="scss">
-.dropselect {
-  cursor: pointer;
-  position: relative;
-  background: #fff;
-  border-radius: 5px;
-  border: 1px solid #e8e8e8;
-  transition: border linear .1s;
+<style lang="sass">
+.dropselect
+  cursor: pointer
+  position: relative
+  border-radius: 5px
+  background-color: #fff
+  border: 1px solid #e8e8e8
+  transition: border linear .1s
 
-  &:hover, &--visible {
-    border: 1px solid grey;
-  }
+  &:hover, &--visible
+    border: 1px solid grey
 
-  &::after {
-    top: 0;
-    right: 0;
-    height: 100%;
-    content: '▼';
-    color: gray;
-    display: flex;
-    font-size: 14px;
-    font-weight: 700;
-    position: absolute;
-    margin-right: 15px;
-    align-items: center;
-    pointer-events: none;
-    justify-content: center;
-    transition: transform linear .1s;
-    font-family: monospace, sans-serif;
-  }
+  &::after
+    top: 0
+    right: 0
+    height: 100%
+    content: '▼'
+    color: gray
+    display: flex
+    font-size: 14px
+    font-weight: 700
+    position: absolute
+    margin-right: 15px
+    align-items: center
+    pointer-events: none
+    justify-content: center
+    transition: transform linear .1s
+    font-family: monospace, sans-serif
 
-  &--visible {
+  &--visible
 
-    &::after {
-      transform: rotate(180deg);
-    }
-  }
+    &::after
+      transform: rotate(180deg)
 
-  &__input {
-    border: none;
-    outline: none;
-    cursor: pointer;
-    font-size: 14px;
-    padding-left: 5px;
-    margin-right:40px;
-    border-radius: 5px;
-    position: relative;
-    padding: 8px 0 8px 8px;
-    font-family: Montserrat, sans-serif;
+  &_input
+    border: none
+    outline: none
+    cursor: pointer
+    font-size: 14px
+    padding-left: 5px
+    margin-right: 40px
+    border-radius: 5px
+    position: relative
+    padding: 8px 0 8px 8px
+    background-color: transparent
+    font-family: Montserrat, sans-serif
 
-    &:focus {
-      cursor: text;
-    }
-  }
+    &:focus
+      cursor: text
 
-  &__list {
-    margin: 0;
-    z-index: 1;
-    width: 100%;
-    overflow: auto;
-    padding: 10px 0;
-    max-height: 250px;
-    position: absolute;
-    border-radius: 10px;
-    top: calc(100% + 10px);
-    background-color: #fff;
-    box-shadow: 0 0 10px 0 #b2b2b2;
+  &_list
+    margin: 0
+    z-index: 1
+    width: 100%
+    overflow: auto
+    padding: 10px 0
+    max-height: 250px
+    position: absolute
+    border-radius: 10px
+    top: calc(100% + 10px)
+    background-color: #fff
+    box-shadow: 0 0 10px 0 #b2b2b2
 
-    &__option {
-      display: block;
-      cursor: pointer;
-      font-size: 14px;
-      color: #1482c5;
-      overflow: hidden;
-      padding: 10px 20px;
-      white-space: nowrap;
-      text-decoration: none;
-      text-overflow: ellipsis;
+    &_option
+      display: block
+      cursor: pointer
+      font-size: 14px
+      color: #1482c5
+      overflow: hidden
+      padding: 10px 20px
+      white-space: nowrap
+      text-decoration: none
+      text-overflow: ellipsis
 
-      &--hover {
-        background: #e6e6e6;
-      }
-    }
-  }
-}
+      &--hover
+        background: #e6e6e6
 </style>
