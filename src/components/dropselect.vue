@@ -1,6 +1,6 @@
 <template lang="pug">
   .dropselect(
-    v-click-outside.present="toggleDropselect.bind(null, false)"
+    v-click-out="toggleDropselect.bind(null, false)"
     :class="{ 'dropselect--visible': isOptionsVisible }"
     @click.self="toggleDropselect(!isOptionsVisible)"
   )
@@ -113,9 +113,9 @@ export default {
   &::after
     top: 0
     right: 0
-    height: 100%
+    color: #888
     content: '▼'
-    color: gray
+    height: 100%
     display: flex
     font-size: 14px
     font-weight: 700
@@ -143,7 +143,7 @@ export default {
     position: relative
     padding: 8px 0 8px 8px
     background-color: transparent
-    font-family: Montserrat, sans-serif
+    font-family: Roboto, sans-serif
 
     &:focus
       cursor: text

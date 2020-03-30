@@ -11,11 +11,11 @@
 </template>
 
 <script>
-import Radio from '@/components/Radio.vue'
+import radio from '@/components/radio.vue'
 
 export default {
   components: {
-    Radio,
+    radio,
   },
   props: {
     group: { type: String, required: true },
@@ -23,8 +23,8 @@ export default {
     radioPicked: { type: String, default: '' },
   },
   methods: {
-    pickRadio(radio) {
-      return this.$emit('pick-radio', radio)
+    pickRadio(pickedRadio) {
+      return this.$emit('pick-radio', pickedRadio)
     },
   },
 }
