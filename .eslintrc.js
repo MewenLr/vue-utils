@@ -12,6 +12,7 @@ module.exports = {
   },
   rules: {
     'linebreak-style': 'off',
+    'no-return-assign': 'off',
     'semi': ['error', 'never'],
     'quotes': ['error', 'single'],
     'max-len': ['error', { code: 120 }],

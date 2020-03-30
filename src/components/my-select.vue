@@ -1,13 +1,13 @@
 <template lang="pug">
   .my-select(
-    v-click-out="closeList"
     :class="{ 'my-select--open': open }"
   )
     input.my-select_input(
-      ref="input"
-      :value="compInputValue"
+      ref="selectInput"
+      :value="inputValue"
       :placeholder="placeholder"
-      @click="openList"
+      @focus="openList"
+      @blur="closeList"
       @keyup="keyOperations"
     )
     button.my-select_button(
@@ -15,14 +15,14 @@
     )
       | ▼
     ul.my-select_list(
-      v-show="open"
-    )
-      li.my-select_list_option(
-        v-for="(option, index) in compListOptions"
-        :key="option.id"
-        @click="selectOption(option, index)"
+        v-show="open"
       )
-        | {{ option[label] }}
+        li.my-select_list_option(
+          v-for="option in compListOptions"
+          :key="option.id"
+          @mousedown="selectOption(option)"
+        )
+          | {{ option[label] }}
 </template>
 
 <script>
@@ -37,7 +37,8 @@ export default {
   data: () => ({
     open: false,
     inputValue: '',
-    searchedOptions: null,
+    selected: false,
+    searchedOptions: [],
     cancelMsg: 'Annuler la sélection',
   }),
   computed: {
@@ -47,38 +48,37 @@ export default {
       return this.options
     },
     compInputValue() {
-      const listClosed = ((this.options.length && this.inputValue) && !this.open)
-      console.log('listClosed >>', listClosed)
-      const searching = !!((this.options.length && this.inputValue) && this.searchedOptions.length)
-      console.log('searching >>', searching)
-      if (listClosed || searching) return this.inputValue
-      return ''
+      if (!this.options.length) return ''
+      if (this.open && !this.searchedOptions.length) return ''
+      return this.inputValue
     },
   },
   methods: {
     openList() {
       this.open = true
-      this.$refs.input.focus()
+      this.$refs.selectInput.focus()
+      // this.$refs.selectInput.value = ''
     },
     closeList() {
       this.open = false
-      this.$refs.input.blur()
-      this.searchedOptions = null
+      this.searchedOptions = []
+      this.$refs.selectInput.blur()
+      // this.$refs.selectInput.value = this.inputValue
     },
-    selectOption(option, index) {
-      if (this.clearable && !index) this.inputValue = ''
+    selectOption(option) {
+      if (option[this.label] === this.cancelMsg) this.inputValue = ''
       else this.inputValue = option[this.label]
-      this.closeList()
     },
     keyOperations(event) {
       // key === escape
       if (event.keyCode === 27) this.closeList()
       // key !== shift, ctrl, alt && arrows
       else if (!(event.keyCode >= 16 && event.keyCode <= 18) && !(event.keyCode >= 37 && event.keyCode <= 40)) {
-        const { value } = event.target
-        const re = new RegExp(`^(${value})`, 'gi')
+        // const { value } = event.target
+        this.inputValue = event.target.value
+        const re = new RegExp(`^(${this.inputValue})`, 'gi')
         this.searchedOptions = this.options.filter((opt) => (opt[this.label].match(re) ? opt : false)).map((opt) => opt)
-        if (this.searchedOptions.length === this.options.length) this.searchedOptions = null
+        if (this.searchedOptions.length === this.options.length) this.searchedOptions = []
       }
     },
   },
