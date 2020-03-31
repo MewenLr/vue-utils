@@ -4,25 +4,25 @@
   )
     input.my-select_input(
       ref="selectInput"
-      :value="inputValue"
       :placeholder="placeholder"
-      @focus="openList"
-      @blur="closeList"
-      @keyup="keyOperations"
+      @blur.prevent="closeList"
+      @focus.prevent="openList"
+      @keyup.esc.prevent="blurInput"
+      @input="searchOption($event.target.value)"
     )
     button.my-select_button(
-      @click="open ? closeList() : openList()"
+      @mousedown.prevent="open ? blurInput() : focusInput()"
     )
       | ▼
     ul.my-select_list(
-        v-show="open"
+      v-show="open"
+    )
+      li.my-select_list_option(
+        v-for="option in compListOptions"
+        :key="option.id"
+        @mousedown="selectOption(option)"
       )
-        li.my-select_list_option(
-          v-for="option in compListOptions"
-          :key="option.id"
-          @mousedown="selectOption(option)"
-        )
-          | {{ option[label] }}
+        | {{ option[label] }}
 </template>
 
 <script>
@@ -37,49 +37,54 @@ export default {
   data: () => ({
     open: false,
     inputValue: '',
-    selected: false,
-    searchedOptions: [],
+    searchedOptions: null,
     cancelMsg: 'Annuler la sélection',
   }),
   computed: {
     compListOptions() {
-      if (this.searchedOptions.length) return this.searchedOptions
+      if (this.searchedOptions) return this.searchedOptions
       if (this.clearable) return [{ [this.label]: this.cancelMsg }, ...this.options]
       return this.options
     },
-    compInputValue() {
-      if (!this.options.length) return ''
-      if (this.open && !this.searchedOptions.length) return ''
-      return this.inputValue
+  },
+  watch: {
+    options(newVal) {
+      if (!newVal.length) {
+        this.inputValue = ''
+        this.$refs.selectInput.value = ''
+      }
     },
   },
   methods: {
-    openList() {
-      this.open = true
+    focusInput() {
+      console.log('here in focus')
       this.$refs.selectInput.focus()
-      // this.$refs.selectInput.value = ''
+    },
+    blurInput() {
+      console.log('here in blur')
+      this.$refs.selectInput.blur()
+    },
+    openList() {
+      console.log('here in open')
+      this.open = true
+      this.$refs.selectInput.value = ''
     },
     closeList() {
+      console.log('here in close')
       this.open = false
-      this.searchedOptions = []
-      this.$refs.selectInput.blur()
-      // this.$refs.selectInput.value = this.inputValue
+      this.searchedOptions = null
+      this.$refs.selectInput.value = this.inputValue
     },
     selectOption(option) {
+      console.log('here in select')
       if (option[this.label] === this.cancelMsg) this.inputValue = ''
       else this.inputValue = option[this.label]
     },
-    keyOperations(event) {
-      // key === escape
-      if (event.keyCode === 27) this.closeList()
-      // key !== shift, ctrl, alt && arrows
-      else if (!(event.keyCode >= 16 && event.keyCode <= 18) && !(event.keyCode >= 37 && event.keyCode <= 40)) {
-        // const { value } = event.target
-        this.inputValue = event.target.value
-        const re = new RegExp(`^(${this.inputValue})`, 'gi')
-        this.searchedOptions = this.options.filter((opt) => (opt[this.label].match(re) ? opt : false)).map((opt) => opt)
-        if (this.searchedOptions.length === this.options.length) this.searchedOptions = []
-      }
+    searchOption(value) {
+      console.log('here is value >>', value)
+      const re = new RegExp(`^(${value})`, 'gi')
+      this.searchedOptions = this.options.filter((opt) => (opt[this.label].match(re) ? opt : false)).map((opt) => opt)
+      if (this.searchedOptions.length === this.options.length) this.searchedOptions = null
     },
   },
 }
@@ -88,16 +93,13 @@ export default {
 <style lang="sass">
 .my-select
   $self: &
-  height: 38px
   cursor: pointer
   position: relative
-  border-radius: 5px
-  background-color: #fff
-  border: 1px solid #e8e8e8
-  transition: border linear .1s
 
   &:hover, &--open
-    border: 1px solid grey
+
+    #{ $self }_input
+      border: 1px solid grey
 
   &--open
 
@@ -105,6 +107,9 @@ export default {
       transform: rotate(180deg)
 
   &_button
+    top: 0
+    right: 0
+    position: absolute
     color: #777
     width: 40px
     height: 100%
@@ -115,19 +120,17 @@ export default {
     transition: transform linear .1s
 
   &_input
+    height: 34px
     border: none
     outline: none
-    cursor: pointer
     font-size: 14px
-    padding-left: 5px
     border-radius: 5px
     position: relative
-    padding: 8px 0 8px 8px
-    background-color: transparent
+    padding: 0 40px 0 8px
+    background-color: #fff
+    border: 1px solid #e8e8e8
+    transition: border linear .1s
     font-family: Roboto, sans-serif
-
-    &:focus
-      cursor: text
 
   &_list
     margin: 0
