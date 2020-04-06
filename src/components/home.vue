@@ -1,39 +1,27 @@
 <template lang="pug">
   .home Hello from home
-    a-image(
-      placeholder='assets/img/surf-min.jpg'
-      source='assets/img/surf.jpg'
-    )
-    a-image(
-      source='assets/img/greece.jpg'
-      placeholder='assets/img/greece-min.jpg'
-    )
-
-    //- placeholder='assets/img/greece-min.jpg'
-    //- img(
-    //-   class="image__item"
-    //-   alt="random image"
-    //-   src="@/assets/img/surf.jpg"
+    //- a-image(
+    //-   placeholder='assets/img/surf-min.jpg'
+    //-   source='assets/img/surf.jpg'
+    //- )
+    //- a-image(
+    //-   source='assets/img/greece.jpg'
+    //-   placeholder='assets/img/greece-min.jpg'
     //- )
 
-    //- button(@click="removeOption") Remove Option
-    //- br
-    //- button(@click="addOption") Add Option
-    //- br
-    //- button(@click="toggleClearable") Toggle Clearable
-    //- br
-    //- dropselect(
-    //-   label="BusinessName"
-    //-   :options="list"
-    //-   :clearable="clear"
-    //- )
-    //- br
-    //- my-select(
-    //-   label="BusinessName"
-    //-   placeholder="Point de facturation"
-    //-   :options="list"
-    //-   :clearable="clear"
-    //- )
+    br
+    button(@click="removeOption") Remove Option
+    br
+    button(@click="addOption") Add Option
+    br
+    button(@click="toggleClearable") Toggle Clearable
+    br
+    o-dropselect(
+      label="BusinessName"
+      placeholder="Point de facturation"
+      :options="list"
+      :clearable="clear"
+    )
 
     //- toggle(:checked="true")
 
@@ -67,11 +55,13 @@ import AImage from '@/components/a-image.vue'
 // import Toggle from '@/components/toggle.vue'
 // import Dropselect from '@/components/dropselect.vue'
 // import MySelect from '@/components/my-select.vue'
+import ODropselect from '@/components/dropselect/organisms/o-dropselect.vue'
 
 export default {
   name: 'Home',
   components: {
     AImage,
+    ODropselect,
     // Radio,
     // GroupRadio,
     // Toggle,
@@ -106,12 +96,12 @@ export default {
       this.list = []
     },
     addOption() {
-      const id = Math.floor(Math.random() * 999999)
-      this.list.push({
-        id,
-        BusinessName: 'AirWave Limited',
-        Adress: '3 avenue Saint Martin',
-      })
+      for (let i = 0; i < 20; i += 1) {
+        this.list.push({
+          id: i,
+          BusinessName: `test-${i}`,
+        })
+      }
     },
     toggleClearable() {
       this.clear = !this.clear

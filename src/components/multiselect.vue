@@ -1,24 +1,24 @@
 <template lang="pug">
-  .dropselect(
-    v-click-out="toggleDropselect.bind(null, false)"
-    :class="{ 'dropselect--visible': isOptionsVisible }"
-    @click.self="toggleDropselect(!isOptionsVisible)"
+  .multiselect(
+    v-click-out="toggleMultiselect.bind(null, false)"
+    :class="{ 'multiselect--visible': isOptionsVisible }"
+    @click.self="toggleMultiselect(!isOptionsVisible)"
   )
-    input.dropselect_input(
+    input.multiselect_input(
       ref="input"
       placeholder="Point de facturation"
       @keyup="arrowHover($event)"
-      @click="toggleDropselect(true)"
+      @click="toggleMultiselect(true)"
     )
-    ul.dropselect_list(
+    ul.multiselect_list(
       ref="list"
       v-show="isOptionsVisible"
       @scroll="reachBottom"
     )
-      li.dropselect_list_option(
+      li.multiselect_list_option(
         v-for="(option, index) in listOptions"
         :key="option.id"
-        :class="{ 'dropselect_list_option--hover': optionHovered === index}"
+        :class="{ 'multiselect_list_option--hover': optionHovered === index}"
         @mouseenter="mouseHover(index)"
         @click.stop="selectOption(option)"
       )
@@ -27,7 +27,7 @@
 
 <script>
 export default {
-  name: 'Dropselect',
+  name: 'Multiselect',
   props: {
     label: { type: String, required: true },
     options: { type: Array, required: true },
@@ -53,7 +53,7 @@ export default {
     },
   },
   methods: {
-    toggleDropselect(visible) {
+    toggleMultiselect(visible) {
       if (visible) this.$refs.input.focus()
       else {
         this.$refs.input.blur()
@@ -65,7 +65,7 @@ export default {
     selectOption(option) {
       if (option[this.label] === this.defaultMsg) this.inputValue = ''
       else this.inputValue = option[this.label]
-      this.toggleDropselect(false)
+      this.toggleMultiselect(false)
       this.$emit('select-option', option)
     },
     arrowHover(event) {
@@ -77,7 +77,7 @@ export default {
       // key === enter
       else if (event.keyCode === 13) this.selectOption(this.listOptions[this.optionHovered])
       // key === escape
-      else if (event.keyCode === 27) this.toggleDropselect(false)
+      else if (event.keyCode === 27) this.toggleMultiselect(false)
       // key !== shift, ctrl, alt && arrows
       else if (!(event.keyCode >= 16 && event.keyCode <= 18) && !(event.keyCode >= 37 && event.keyCode <= 40)) {
         const { value } = event.target
@@ -99,7 +99,7 @@ export default {
 </script>
 
 <style lang="sass">
-.dropselect
+.multiselect
   cursor: pointer
   position: relative
   border-radius: 5px
