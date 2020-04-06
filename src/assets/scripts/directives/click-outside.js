@@ -1,6 +1,4 @@
-import Vue from 'vue'
-
-export default Vue.directive('click-out', {
+export default {
   bind: (el, binding) => {
     if (typeof binding.value !== 'function') {
       console.warn(`[Vue-click-outside] provided expression '${binding.expression}' is not a function`)
@@ -13,4 +11,4 @@ export default Vue.directive('click-out', {
   unbind: (el) => {
     document.removeEventListener('click', el.eventFn)
   },
-})
+}
