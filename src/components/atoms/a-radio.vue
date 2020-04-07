@@ -14,7 +14,7 @@
 
 <script>
 export default {
-  name: 'Radio',
+  name: 'ARadio',
   props: {
     group: { type: String, default: '' },
     value: { type: String, required: true },

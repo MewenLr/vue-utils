@@ -11,9 +11,10 @@
 </template>
 
 <script>
-import radio from '@/components/radio.vue'
+import radio from '@/components/atoms/a-radio.vue'
 
 export default {
+  name: 'MGroupRadio',
   components: {
     radio,
   },

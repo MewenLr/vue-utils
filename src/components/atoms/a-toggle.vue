@@ -10,7 +10,7 @@
 
 <script>
 export default {
-  name: 'Toggle',
+  name: 'AToggle',
   data: () => ({
     isActive: false,
   }),

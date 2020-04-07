@@ -1,14 +1,14 @@
 import Vue from 'vue'
 // import App from '@/App.vue'
-import Home from '@/components/home.vue'
-import About from '@/components/about.vue'
+import PHome from '@/components/pages/p-home.vue'
+import PAbout from '@/components/pages/p-about.vue'
 import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
 
 const routes = [
-  { path: '/', component: Home },
-  { path: '/about', component: About },
+  { path: '/', component: PHome },
+  { path: '/about', component: PAbout },
 ]
 
 const router = new VueRouter({

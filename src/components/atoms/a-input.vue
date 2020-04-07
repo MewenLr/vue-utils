@@ -7,19 +7,19 @@
       name="input"
       :type="type"
       :placeholder="placeholder"
-      @blur.prevent.stop="emitInputBlur($event)"
-      @focus.prevent.stop="emitInputFocus($event)"
-      @input="emitInputValue($event.target.value)"
-      @keydown.up.prevent.stop="$emit('input-up')"
-      @keydown.down.prevent.stop="$emit('input-down')"
-      @keydown.esc.prevent.stop="emitInputEscape($event)"
-      @keydown.enter.prevent.stop="$emit('input-enter')"
+      @input="emitEvent('input-value', $event)"
+      @blur.prevent.stop="emitEvent('input-blur', $event)"
+      @focus.prevent.stop="emitEvent('input-focus', $event)"
+      @keydown.up.prevent.stop="emitEvent('input-up', $event)"
+      @keydown.down.prevent.stop="emitEvent('input-down', $event)"
+      @keydown.esc.prevent.stop="emitEvent('input-escape', $event)"
+      @keydown.enter.prevent.stop="emitEvent('input-enter', $event)"
     )
     button.input_button(
       v-if="button"
       v-html="btnDict[button]"
       :class="`input_button--${button}`"
-      @mousedown="emitMousedownBtn($event)"
+      @mousedown="emitEvent('mousedown-button', $event)"
     )
 </template>
 
@@ -27,7 +27,7 @@
 const btnDict = {
   arrow: '▼',
   search: 'Search',
-}
+} /* tag-icon */
 
 export default {
   name: 'AInput',
@@ -41,22 +41,10 @@ export default {
     focused: false,
   }),
   methods: {
-    emitInputFocus(event) {
-      this.focused = true
-      this.$emit('input-focus', event)
-    },
-    emitInputBlur(event) {
-      this.focused = false
-      this.$emit('input-blur', event)
-    },
-    emitInputValue(value) {
-      this.$emit('input-value', value)
-    },
-    emitMousedownBtn(event) {
-      this.$emit('mousedown-button', event)
-    },
-    emitInputEscape(event) {
-      this.$emit('input-escape', event)
+    emitEvent(type, event) {
+      if (type === 'input-blur') this.focused = false
+      if (type === 'input-focus') this.focused = true
+      this.$emit(type, event)
     },
   },
 }

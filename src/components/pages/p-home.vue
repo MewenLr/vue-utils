@@ -1,5 +1,6 @@
 <template lang="pug">
   .home Hello from home
+
     //- a-image(
     //-   placeholder='assets/img/surf-min.jpg'
     //-   source='assets/img/surf.jpg'
@@ -10,11 +11,15 @@
     //- )
 
     br
+    br
     button(@click="removeOption") Remove Option
+    br
     br
     button(@click="addOption") Add Option
     br
+    br
     button(@click="toggleClearable") Toggle Clearable
+    br
     br
     o-dropselect(
       label="BusinessName"
@@ -49,40 +54,36 @@
 </template>
 
 <script>
-import AImage from '@/components/a-image.vue'
-// import Radio from '@/components/radio.vue'
-// import GroupRadio from '@/components/group-radio.vue'
-// import Toggle from '@/components/toggle.vue'
-// import Dropselect from '@/components/dropselect.vue'
-// import MySelect from '@/components/my-select.vue'
-import ODropselect from '@/components/dropselect/organisms/o-dropselect.vue'
+import AImage from '@/components/atoms/a-image.vue'
+// import ARadio from '@/components/atoms/a-radio.vue'
+// import MGroupRadio from '@/components/molecules/m-group-radio.vue'
+// import AToggle from '@/components/atoms/a-toggle.vue'
+import ODropselect from '@/components/organisms/o-dropselect.vue'
 
 export default {
-  name: 'Home',
+  name: 'PHome',
   components: {
     AImage,
     ODropselect,
-    // Radio,
-    // GroupRadio,
-    // Toggle,
-    // Dropselect,
-    // MySelect,
+    // ARadio,
+    // MGroupRadio,
+    // AToggle,
   },
   data: () => ({
     clear: true,
     list: [
       {
-        id: 1,
+        id: 100,
         BusinessName: 'Atlantic SAS',
         Adress: '15 rue Le Grand',
       },
       {
-        id: 2,
+        id: 200,
         BusinessName: 'German Export',
         Adress: '15 avenue Nothingrad',
       },
       {
-        id: 3,
+        id: 300,
         BusinessName: 'AirWave Limited',
         Adress: '3 avenue Saint Martin',
       },

@@ -27,13 +27,13 @@
         :ref="`dropselectItem-${index}`"
         :class="{ 'dropselect_list_option--hover': target === index && option[label] !== notFoundMsg }"
         @mouseenter="target = index"
-        @mousedown.prevent="selectOption(option)"
+        @mousedown.prevent="selectOption($event, option)"
       )
         | {{ option[label] }}
 </template>
 
 <script>
-import AInput from '@/components/dropselect/atoms/a-input.vue'
+import AInput from '@/components/atoms/a-input.vue'
 
 export default {
   name: 'ODropselect',
@@ -94,14 +94,15 @@ export default {
       }
       /* force blur */ this.$refs.dropselectInput.$refs.inputField.blur()
     },
-    selectOption(option) {
-      const opt = option?.[this.label] || this.compListOptions?.[this.target]?.[this.label]
+    selectOption() {
+      const opt = this.compListOptions?.[this.target]?.[this.label]
       if (opt === this.notFoundMsg) return false
       this.inputValue = (opt === this.cancelMsg || !opt) ? '' : opt
       return this.closeList()
     },
-    searchOption(value) {
+    searchOption(event) {
       this.target = 0
+      const { value } = event.target
       const re = new RegExp(`^(${value})`, 'gi')
       this.searchedOptions = this.options.filter((opt) => (opt[this.label].match(re) ? opt : false)).map((opt) => opt)
       if (this.searchedOptions.length === this.options.length) this.searchedOptions = null
