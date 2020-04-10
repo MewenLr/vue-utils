@@ -33,7 +33,7 @@ export default {
   $self: &
   width: 250px
   height: 150px
-  margin-bottom: 1500px
+  margin-top: 1500px
 
   &_placeholder, &_picture
     width: inherit

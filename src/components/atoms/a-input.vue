@@ -5,25 +5,29 @@
     input.input_field(
       ref="inputField"
       name="input"
+      v-debounce:200="test.bind(null, '14s')"
       :type="type"
       :placeholder="placeholder"
+      @keyup="emitEvent('input-keyup')"
       @input="emitEvent('input-value', $event)"
       @blur.prevent.stop="emitEvent('input-blur', $event)"
       @focus.prevent.stop="emitEvent('input-focus', $event)"
-      @keydown.up.prevent.stop="emitEvent('input-up', $event)"
-      @keydown.down.prevent.stop="emitEvent('input-down', $event)"
       @keydown.esc.prevent.stop="emitEvent('input-escape', $event)"
       @keydown.enter.prevent.stop="emitEvent('input-enter', $event)"
+      @keydown.up.prevent.stop="emitEvent('input-arrow-up', $event)"
+      @keydown.down.prevent.stop="emitEvent('input-arrow-down', $event)"
     )
     button.input_button(
       v-if="button"
       v-html="btnDict[button]"
       :class="`input_button--${button}`"
-      @mousedown="emitEvent('mousedown-button', $event)"
+      @mousedown.prevent.stop="emitEvent('mousedown-button', $event)"
     )
 </template>
 
 <script>
+import { debounce } from '@/assets/scripts/directives'
+
 const btnDict = {
   arrow: '▼',
   search: 'Search',
@@ -31,10 +35,15 @@ const btnDict = {
 
 export default {
   name: 'AInput',
+  directives: { debounce },
   props: {
-    type: { type: String, required: true },
+    type: { type: String, default: 'text' },
     placeholder: { type: String, default: '' },
-    button: { type: String, default: '', validator: (prop) => Object.keys(btnDict).includes(prop) },
+    button: {
+      type: String,
+      default: undefined,
+      validator: (prop) => Object.keys(btnDict).includes(prop),
+    },
   },
   data: () => ({
     btnDict,
@@ -44,7 +53,14 @@ export default {
     emitEvent(type, event) {
       if (type === 'input-blur') this.focused = false
       if (type === 'input-focus') this.focused = true
-      this.$emit(type, event)
+      if (type === 'input-value') {
+        const invalidCharacter = /[`!@#$%^&*()+=\[\]{};':"\\|<>\/?~]/
+        if (invalidCharacter.test(event.target.value)) return this.$emit('input-error', 'Invalid character')
+      }
+      return this.$emit(type, event)
+    },
+    test(param1, event) {
+      console.log('here in event >>', event, ' & param1 >>', param1)
     },
   },
 }

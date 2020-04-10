@@ -1,15 +1,18 @@
-function tagLoaded(el) {
-  setTimeout(() => el.classList.add('image--loaded'), 100)
-}
-
 export default {
   bind: (el, binding) => {
+    if (typeof binding.value !== 'boolean') {
+      console.error(`[v-lazy-load] provided expression '${binding.expression}' is not a boolean`)
+      return false
+    }
+
+    if (Object.keys(binding.modifiers).length) console.warn('[v-lazy-load] doesn\'t accept modifiers')
+
     function loadImage() {
       const picture = Array.from(el.children).find(
         (element) => element.classList.value.includes('picture'),
       )
       if (picture) {
-        picture.addEventListener('load', tagLoaded(el))
+        picture.addEventListener('load', () => el.classList.add('image--loaded'))
         picture.addEventListener('error', () => console.log('error'))
         picture.src = picture.dataset.url
       }
@@ -38,7 +41,7 @@ export default {
       (element) => element.classList.value.includes('picture'),
     )
     if (picture) {
-      picture.removeEventListener('load', tagLoaded(el))
+      picture.removeEventListener('load', () => el.classList.add('image--loaded'))
       picture.removeEventListener('error', () => console.log('error'))
     }
   },

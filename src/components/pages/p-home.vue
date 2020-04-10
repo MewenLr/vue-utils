@@ -1,6 +1,10 @@
 <template lang="pug">
   .home Hello from home
 
+    //- a-input(
+    //-   @input-value="inputValue"
+    //- )
+
     //- a-image(
     //-   placeholder='assets/img/surf-min.jpg'
     //-   source='assets/img/surf.jpg'
@@ -54,20 +58,22 @@
 </template>
 
 <script>
+import AInput from '@/components/atoms/a-input.vue'
 import AImage from '@/components/atoms/a-image.vue'
-// import ARadio from '@/components/atoms/a-radio.vue'
-// import MGroupRadio from '@/components/molecules/m-group-radio.vue'
-// import AToggle from '@/components/atoms/a-toggle.vue'
+import ARadio from '@/components/atoms/a-radio.vue'
+import MGroupRadio from '@/components/molecules/m-group-radio.vue'
+import AToggle from '@/components/atoms/a-toggle.vue'
 import ODropselect from '@/components/organisms/o-dropselect.vue'
 
 export default {
   name: 'PHome',
   components: {
+    AInput,
     AImage,
     ODropselect,
-    // ARadio,
-    // MGroupRadio,
-    // AToggle,
+    ARadio,
+    MGroupRadio,
+    AToggle,
   },
   data: () => ({
     clear: true,
@@ -116,6 +122,8 @@ export default {
     // submitForm() {
     //   return false
     // },
+    inputValue() {
+    },
   },
 }
 </script>

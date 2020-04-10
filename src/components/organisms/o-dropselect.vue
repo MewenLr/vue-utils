@@ -7,29 +7,32 @@
       ref="dropselectInput"
       placeholder="Point de facturation"
       :button="'arrow'"
+      @input-error="handleError"
       @input-blur="closeList"
       @input-focus="openList"
-      @input-down="nextOption"
-      @input-escape="closeList"
-      @input-up="previousOption"
+      @input-escape="blurInput"
+      @input-keyup="enableHover"
       @input-value="searchOption"
       @input-enter="selectOption"
-      @mousedown-button="!open ? openList($event) : false"
+      @input-arrow-down="nextOption"
+      @input-arrow-up="previousOption"
+      @mousedown-button="open ? blurInput() : focusInput()"
     )
     ul.dropselect_list(
       ref="dropselectList"
       v-show="open"
-      @scroll="reachBottom"
+      @scroll="scrollList"
     )
       li.dropselect_list_option(
         v-for="(option, index) in compListOptions"
         :key="option.id"
         :ref="`dropselectItem-${index}`"
-        :class="{ 'dropselect_list_option--hover': target === index && option[label] !== notFoundMsg }"
-        @mouseenter="target = index"
+        :class="{ 'dropselect_list_option--hover': (target === index) && (option[label] !== notFoundMsg) }"
+        @mouseenter="hoverOption(index)"
         @mousedown.prevent="selectOption($event, option)"
       )
         | {{ option[label] }}
+    .dropselect_error(v-show="error") {{ error }}
 </template>
 
 <script>
@@ -47,20 +50,19 @@ export default {
     clearable: { type: Boolean, default: false },
   },
   data: () => ({
+    error: '',
     open: false,
     inputValue: '',
     target: undefined,
-    scrollPosition: 0,
+    hoverEnabled: true,
     searchedOptions: null,
     cancelMsg: 'Annuler la sélection',
     notFoundMsg: 'Aucune option trouvée',
   }),
   computed: {
     compListOptions() {
-      if (this.searchedOptions) {
-        if (!this.searchedOptions.length) return [{ [this.label]: this.notFoundMsg }]
-        return this.searchedOptions
-      }
+      if (this.searchedOptions && !this.searchedOptions.length) return [{ [this.label]: this.notFoundMsg }]
+      if (this.searchedOptions) return this.searchedOptions
       if (this.clearable) return [{ [this.label]: this.cancelMsg }, ...this.options]
       return this.options
     },
@@ -74,33 +76,34 @@ export default {
     },
   },
   methods: {
-    openList(event) {
-      event.preventDefault()
-      if (event?.type === 'focus') {
-        this.target = 0
-        this.open = true
-        return this.$refs.dropselectInput.$refs.inputField.value = ''
-      }
-      return this.$refs.dropselectInput.$refs.inputField.focus()
+    focusInput() {
+      this.$refs.dropselectInput.$refs.inputField.focus()
     },
-    closeList(event) {
-      if (event?.type === 'blur') {
-        this.open = false
-        this.target = undefined
-        this.scrollPosition = 0
-        this.searchedOptions = null
-        this.$refs.dropselectList.scrollTo(0, this.scrollPosition)
-        this.$refs.dropselectInput.$refs.inputField.value = this.inputValue
-      }
-      /* force blur */ this.$refs.dropselectInput.$refs.inputField.blur()
+    blurInput() {
+      this.$refs.dropselectInput.$refs.inputField.blur()
+    },
+    openList() {
+      this.target = 0
+      this.open = true
+      this.$refs.dropselectInput.$refs.inputField.value = ''
+    },
+    closeList() {
+      this.error = ''
+      this.open = false
+      this.target = undefined
+      this.searchedOptions = null
+      this.$refs.dropselectList.scrollTo(0, 0)
+      this.$refs.dropselectInput.$refs.inputField.value = this.inputValue
     },
     selectOption() {
-      const opt = this.compListOptions?.[this.target]?.[this.label]
-      if (opt === this.notFoundMsg) return false
-      this.inputValue = (opt === this.cancelMsg || !opt) ? '' : opt
-      return this.closeList()
+      const option = this.compListOptions?.[this.target]?.[this.label]
+      if (option === this.notFoundMsg) return false
+      this.inputValue = option === this.cancelMsg ? '' : option
+      return this.blurInput()
     },
     searchOption(event) {
+      if (this.error) this.error = ''
+
       this.target = 0
       const { value } = event.target
       const re = new RegExp(`^(${value})`, 'gi')
@@ -111,26 +114,42 @@ export default {
       if (this.target === undefined) this.target = 0
       else if (this.target < (this.compListOptions.length - 1)) this.target += 1
 
+      const list = this.$refs.dropselectList
       const option = this.$refs[`dropselectItem-${this.target}`][0]
       const bottomOption = option.offsetTop + option.offsetHeight
-      if (bottomOption >= (this.$refs.dropselectList.offsetHeight + this.scrollPosition)) {
-        this.scrollPosition += option.offsetHeight
-        this.$refs.dropselectList.scrollTo(0, this.scrollPosition)
+      const scrollBottomPosition = list.scrollTop + list.offsetHeight
+      const nbOptVisible = Math.floor(list.offsetHeight / option.offsetHeight) - 1
+
+      if (bottomOption >= scrollBottomPosition) {
+        list.scrollTo(0, (this.target - nbOptVisible) * option.offsetHeight)
+        this.hoverEnabled = false
       }
     },
     previousOption() {
       if (this.target > 0) this.target -= 1
 
+      const list = this.$refs.dropselectList
       const option = this.$refs[`dropselectItem-${this.target}`][0]
-      const topOption = option.offsetTop
-      if (topOption < this.scrollPosition) {
-        this.scrollPosition -= option.offsetHeight
-        this.$refs.dropselectList.scrollTo(0, this.scrollPosition)
+
+      if (option.offsetTop < list.scrollTop) {
+        list.scrollTo(0, this.target * option.offsetHeight)
+        this.hoverEnabled = false
       }
     },
-    reachBottom() {
-      const bottomList = this.$refs.dropselectList.scrollHeight - this.$refs.dropselectList.offsetHeight
-      if (this.$refs.dropselectList.scrollTop >= bottomList) this.$emit('reach-bottom')
+    enableHover() {
+      if (!this.hoverEnabled) this.hoverEnabled = true
+    },
+    hoverOption(index) {
+      return this.hoverEnabled ? this.target = index : false
+    },
+    scrollList() {
+      const list = this.$refs.dropselectList
+      const scrollableHeight = list.scrollHeight - list.offsetHeight
+      if (list.scrollTop >= scrollableHeight) this.$emit('reach-bottom')
+    },
+    handleError(error) {
+      this.error = error
+      this.searchedOptions = []
     },
   },
 }
@@ -188,4 +207,9 @@ export default {
 
       &--hover
         background: #e6e6e6
+
+  &_error
+    color: red
+    text-align: end
+    margin: 5px 8px
 </style>
