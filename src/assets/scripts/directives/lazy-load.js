@@ -13,7 +13,7 @@ export default {
       )
       if (picture) {
         picture.addEventListener('load', () => el.classList.add('image--loaded'))
-        picture.addEventListener('error', () => console.log('error'))
+        picture.addEventListener('error', () => console.log('[v-lazy-load] error'))
         picture.src = picture.dataset.url
       }
     }
@@ -42,7 +42,7 @@ export default {
     )
     if (picture) {
       picture.removeEventListener('load', () => el.classList.add('image--loaded'))
-      picture.removeEventListener('error', () => console.log('error'))
+      picture.removeEventListener('error', () => console.log('[v-lazy-load] error'))
     }
   },
 }

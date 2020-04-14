@@ -6,12 +6,12 @@
     <img
       v-if="placeholder"
       class="image_placeholder"
-      :src="require(`@/${placeholder}`)"
+      :src="compPlaceholder"
     />
     <img
       class="image_picture"
       :alt="alt"
-      :data-url="require(`@/${source}`)"
+      :data-url="compSource"
     >
   </div>
 </template>
@@ -25,15 +25,24 @@ export default {
     source: { type: String, required: true },
     placeholder: { type: String, default: '' },
   },
+  computed: {
+    /* eslint-disable import/no-dynamic-require, global-require */
+    compSource() {
+      if (this.source.includes('http')) return this.source
+      return require(`@/${this.source}`)
+    },
+    compPlaceholder() {
+      if (this.placeholder.includes('http')) return this.placeholder
+      return require(`@/${this.placeholder}`)
+    }, /* eslint-enable */
+  },
 }
 </script>
 
 <style lang="sass">
 .image
-  $self: &
-  width: 250px
-  height: 150px
-  margin-top: 1500px
+  width: inherit
+  height: inherit
 
   &_placeholder, &_picture
     width: inherit
