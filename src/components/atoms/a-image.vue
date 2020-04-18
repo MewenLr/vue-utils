@@ -43,7 +43,6 @@ export default {
 .image
   width: inherit
   height: inherit
-  user-select: inherit
 
   &_placeholder, &_picture
     width: inherit
@@ -56,5 +55,4 @@ export default {
   &_picture
     z-index: 1
     position: relative
-    user-select: inherit
 </style>

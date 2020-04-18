@@ -2,19 +2,29 @@
   .carousel(
     ref="carousel"
     v-drag-up="stopDrag"
-    @mousedown.prevent.stop="startDrag($event)"
-    @mousemove.prevent.stop="doDrag($event)"
+    @mousemove.stop="doDrag($event)"
+    @mousedown.stop="startDrag($event)"
   )
     .carousel_slides(ref="carouselSlides")
       slot
     .carousel_nav
-      button.carousel_nav_previous(@mousedown.prevent.stop="animationOff ? goPrevious($event) : null") <
-      button.carousel_nav_next(@mousedown.prevent.stop="animationOff ? goNext($event) : null") >
+      button.carousel_nav_previous(
+        aria-label="Previous Slide"
+        @mousedown.stop="!animationOn ? goPrevious($event) : null"
+        @keydown.enter.stop="!animationOn ? goPrevious($event) : null"
+      ) <
+      button.carousel_nav_next(
+        aria-label="Next Slide"
+        @mousedown.stop="!animationOn ? goNext($event) : null"
+        @keydown.enter.stop="!animationOn ? goNext($event) : null"
+      ) >
     .carousel_pagination
       button.carousel_pagination_btn(
         v-for="n in slides.length"
+        :aria-label="`Slide ${n}`"
         :class="{'carousel_pagination_btn--active': (n - 1) === target}"
-        @mousedown.prevent.stop="goTo(n - 1)"
+        @mousedown.stop="goTo(n - 1, $event)"
+        @keydown.enter.stop="goTo(n - 1, $event)"
       )
 </template>
 
@@ -26,8 +36,7 @@ export default {
     gapPercent: 0,
     dragging: false,
     target: undefined,
-    direction: 'right',
-    animationOff: true,
+    animationOn: false,
     animationDelay: 300,
     startPoint: undefined,
   }),
@@ -43,46 +52,39 @@ export default {
     },
   },
   computed: {
+    lastIndex() {
+      return this.slides.length - 1
+    },
+    previous() {
+      if ((this.target - 1) < 0) return this.lastIndex
+      return this.target - 1
+    },
     next() {
       if ((this.target + 1) === this.slides.length) return 0
       return this.target + 1
     },
-    previous() {
-      if ((this.target - 1) < 0) return this.slides.length - 1
-      return this.target - 1
-    },
-    lastIndex() {
-      return this.slides.length - 1
-    },
   },
   watch: {
     slides() {
-      if (this.target >= (this.slides.length - 1)) this.target = this.slides.length - 1
+      if (this.target >= (this.lastIndex)) this.target = this.lastIndex
     },
     target(newVal, oldVal) {
-      this.slides.forEach((slide) => {
-        if (slide.index !== this.target || slide.index !== this.previous || slide.index !== this.next) {
-          this.slides[slide.index].$el.style.transform = `translateX(${(slide.index - this.target) * 100}%)`
+      this.slides.forEach((slide, index) => {
+        if (index !== this.target || index !== this.previous || index !== this.next) {
+          this.slides[index].$el.style.transform = `translateX(${(index - this.target) * 100}%)`
         }
       })
       this.slides[this.target].$el.style.transform = 'translateX(0)'
-      this.slides[this.previous].$el.style.transform = 'translateX(-100%)'
       this.slides[this.next].$el.style.transform = 'translateX(100%)'
+      this.slides[this.previous].$el.style.transform = 'translateX(-100%)'
 
-      if (
-        (newVal === this.lastIndex || oldVal === this.lastIndex)
-        && (newVal === 0 || oldVal === 0)
-      ) {
-        // && this.index === 0
+      if ((newVal === this.lastIndex || newVal === 0) && (oldVal === this.lastIndex || oldVal === 0)) {
+        /* handle error from first to last index and last from first index */
         this.slides[0].$el.style.zIndex = this.slides.length
-        // this.$el.style.zIndex = this.slides.length
         setTimeout(() => this.slides[0].$el.style.zIndex = '', this.animationDelay)
-      } else if (
-        (oldVal !== this.lastIndex && newVal !== this.lastIndex)
-      ) {
-        // && this.index === this.lastIndex
+      } else if (oldVal !== this.lastIndex && newVal !== this.lastIndex) {
+        /* handle error from last to any inferior index */
         this.slides[this.lastIndex].$el.style.zIndex = -1
-        // this.$el.style.zIndex = -1
         setTimeout(() => this.slides[this.lastIndex].$el.style.zIndex = '', this.animationDelay)
       }
     },
@@ -95,41 +97,40 @@ export default {
   methods: {
     async goPrevious(event) {
       event.preventDefault()
-      this.animationOff = false
-      this.direction = 'previous'
-      if (this.target <= 0) this.target = this.slides.length - 1
+      this.animationOn = true
+      if (this.target <= 0) this.target = this.lastIndex
       else this.target -= 1
-      await setTimeout(() => this.animationOff = true, this.animationDelay)
+      await setTimeout(() => this.animationOn = false, this.animationDelay)
     },
     async goNext(event) {
       event.preventDefault()
-      this.animationOff = false
-      this.direction = 'next'
-      if (this.target >= (this.slides.length - 1)) this.target = 0
+      this.animationOn = true
+      if (this.target >= (this.lastIndex)) this.target = 0
       else this.target += 1
-      await setTimeout(() => this.animationOff = true, this.animationDelay)
+      await setTimeout(() => this.animationOn = false, this.animationDelay)
     },
-    goTo(index) {
-      this.direction = index > this.target ? 'next' : 'previous'
+    goTo(index, event) {
+      event.preventDefault()
       this.target = index
     },
     startDrag(event) {
-      if (this.animationOff) {
+      event.preventDefault()
+      if (!this.animationOn) {
         this.dragging = true
         this.startPoint = event.clientX
       }
     },
     doDrag(event) {
+      event.preventDefault()
       if (this.dragging) {
-        const gap = event.clientX - this.startPoint
-        this.gapPercent = (gap / this.$refs.carousel.offsetWidth) * 100
-        if (gap > 0) {
-          this.slides[this.previous].$el.style.transition = ''
+        this.gapPercent = ((event.clientX - this.startPoint) / this.$refs.carousel.offsetWidth) * 100
+        if (this.gapPercent > 0) {
           this.slides[this.target].$el.style.transition = ''
+          this.slides[this.previous].$el.style.transition = ''
 
-          this.slides[this.previous].$el.style.transform = `translateX(${-100 + this.gapPercent}%)`
           this.slides[this.target].$el.style.transform = `translateX(${0 + this.gapPercent}%)`
-        } else if (gap < 0) {
+          this.slides[this.previous].$el.style.transform = `translateX(${-100 + this.gapPercent}%)`
+        } else if (this.gapPercent < 0) {
           this.slides[this.next].$el.style.transition = ''
           this.slides[this.target].$el.style.transition = ''
 
@@ -142,30 +143,27 @@ export default {
       event.preventDefault()
       if (this.dragging) {
         this.dragging = false
+        const transitionStyle = `transform ease-in-out ${this.animationDelay / 1000}s`
         if (this.gapPercent === 0) this.goNext(event)
         else if (this.gapPercent > 0) {
-          this.slides[this.previous].$el.style.transition = `transform ease-in-out ${this.animationDelay / 1000}s`
-          this.slides[this.target].$el.style.transition = `transform ease-in-out ${this.animationDelay / 1000}s`
-          if (this.gapPercent > 10) {
-            this.goPrevious(event)
-          }
+          this.slides[this.previous].$el.style.transition = transitionStyle
+          this.slides[this.target].$el.style.transition = transitionStyle
+          if (this.gapPercent > 10) this.goPrevious(event)
           else {
             this.slides[this.previous].$el.style.transform = `translateX(${-100}%)`
             this.slides[this.target].$el.style.transform = `translateX(${0}%)`
           }
-        }
-        else if (this.gapPercent < 0) {
-          this.slides[this.next].$el.style.transition = `transform ease-in-out ${this.animationDelay / 1000}s`
-          this.slides[this.target].$el.style.transition = `transform ease-in-out ${this.animationDelay / 1000}s`
-          if ((this.gapPercent * -1) > 10) {
-            this.goNext(event)
-          }
+        } else if (this.gapPercent < 0) {
+          this.slides[this.next].$el.style.transition = transitionStyle
+          this.slides[this.target].$el.style.transition = transitionStyle
+          if ((this.gapPercent * -1) > 10) this.goNext(event)
           else {
             this.slides[this.next].$el.style.transform = `translateX(${100}%)`
             this.slides[this.target].$el.style.transform = `translateX(${0}%)`
           }
         }
         this.gapPercent = 0
+        this.startPoint = undefined
       }
     },
   },
@@ -176,8 +174,7 @@ export default {
 .carousel
   width: inherit
   height: inherit
-  // overflow: hidden
-  user-select: none
+  overflow: hidden
   position: relative
 
   &_slides
@@ -200,7 +197,6 @@ export default {
       height: 50px
       border: none
       color: white
-      outline: none
       cursor: pointer
       font-size: 20px
       background-color: rgba(black, 0.8)
@@ -218,7 +214,6 @@ export default {
       width: 15px
       height: 15px
       margin: 0 5px
-      outline: none
       cursor: pointer
       border-radius: 100%
       border: 1px solid white

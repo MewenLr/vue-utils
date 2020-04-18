@@ -2,13 +2,10 @@
   .home Hello from home
 
     o-carousel.home_carousel
-      m-slide(v-for="(img, index) in slides" :key="img" :index="index")
+      m-slide(v-for="(img, index) in slides" :key="img")
         a-image(
           :source="img"
         )
-    br
-    button(@click="addSlide") Add Slide
-    button(@click="removeSlide") Remove Slide
 
 
       //- m-slide
@@ -159,14 +156,7 @@ export default {
     // submitForm() {
     //   return false
     // },
-    inputValue() {
-    },
-    addSlide() {
-      this.slides += 1
-    },
-    removeSlide() {
-      this.slides -= 1
-    },
+    inputValue() { },
   },
 }
 </script>
@@ -175,8 +165,8 @@ export default {
 .home
 
   &_carousel
-    width: 450px
-    height: 300px
+    width: 850px
+    height: 650px
 
   &_image
     width: 250px
