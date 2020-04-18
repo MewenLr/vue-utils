@@ -1,4 +1,5 @@
 <template lang="pug">
+  //- TODO: check accessibility
   .radio(@click="pickRadio")
     label.radio_label(:for="`radio-${value}`") {{ value }}
     input.radio_input(

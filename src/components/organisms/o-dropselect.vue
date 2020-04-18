@@ -1,4 +1,5 @@
 <template lang="pug">
+  //- TODO: check accessibility
   .dropselect(
     :class="{ 'dropselect--open': open }"
   )

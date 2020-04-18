@@ -2,9 +2,9 @@
   .home Hello from home
 
     o-carousel.home_carousel
-      m-slide(v-for="n in slides" :key="n" :index="n - 1")
+      m-slide(v-for="(img, index) in slides" :key="img" :index="index")
         a-image(
-          :source="`https://i.picsum.photos/id/${n}/200/300.jpg`"
+          :source="img"
         )
     br
     button(@click="addSlide") Add Slide
@@ -127,7 +127,13 @@ export default {
     // radioPicked: 'mirage',
     // radioPicked2: '',
     // listRadio: ['rafale', 'mirage', 's-16'],
-    slides: 5,
+    slides: [
+      'assets/img/surf.jpg',
+      'assets/img/mountain.jpg',
+      'assets/img/greece.jpg',
+      'assets/img/terrance.jpg',
+      'assets/img/snow.jpg',
+    ],
   }),
   methods: {
     removeOption() {
@@ -169,8 +175,8 @@ export default {
 .home
 
   &_carousel
-    width: 350px
-    height: 250px
+    width: 450px
+    height: 300px
 
   &_image
     width: 250px

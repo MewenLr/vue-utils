@@ -1,4 +1,5 @@
 <template lang="pug">
+  //- TODO accessibility
   .toggle(
     :class="{ 'toggle--right': isActive }"
     @click="activateToggle"
