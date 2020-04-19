@@ -1,28 +1,13 @@
 <template lang="pug">
-  .home Hello from home
+  .home
+    | Hello from home
+    br
 
-    o-carousel.home_carousel
-      m-slide(v-for="(img, index) in slides" :key="img")
-        a-image(
-          :source="img"
-        )
-
-
-      //- m-slide
-      //-   a-image(
-      //-     placeholder='assets/img/surf-min.jpg'
-      //-     source='assets/img/surf.jpg'
-      //-   )
-      //- m-slide
-      //-   a-image(
-      //-     source='assets/img/greece.jpg'
-      //-     placeholder='assets/img/greece-min.jpg'
-      //-   )
-      //- m-slide
-      //-   a-image(
-      //-     source='assets/img/mountain.jpg'
-      //-     placeholder='assets/img/mountain-min.jpg'
-      //-   )
+    //- o-carousel.home_carousel
+    //-   m-slide(v-for="(img, index) in slides" :key="img")
+    //-     a-image(
+    //-       :source="img"
+    //-     )
 
     //- a-input(
     //-   @input-value="inputValue"
@@ -55,7 +40,12 @@
     //-   :clearable="clear"
     //- )
 
-    //- toggle(:checked="true")
+    br
+    a-toggle(
+      label="testLabel"
+      labelPosition="end"
+      :initial-state="true"
+    )
 
     //- form(@submit.prevent="submitForm")
     //-   group-radio(
