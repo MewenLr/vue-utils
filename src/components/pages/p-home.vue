@@ -40,34 +40,39 @@
     //-   :clearable="clear"
     //- )
 
-    br
-    a-toggle(
-      label="testLabel"
-      labelPosition="end"
-      :initial-state="true"
-    )
+    //- br
+    //- a-toggle(
+    //-   label="testLabel"
+    //-   :initial-state="true"
+    //-   :label-position="'end'"
+    //- )
 
-    //- form(@submit.prevent="submitForm")
-    //-   group-radio(
-    //-     group="plane"
-    //-     :list-radio="listRadio"
-    //-     :radio-picked="radioPicked"
-    //-     @pick-radio="updateRadio"
-    //-   )
-    //-   br
-    //-   radio(
-    //-     value="test"
-    //-     group="yo"
-    //-     :checked="radioPicked2 === 'test'"
-    //-     @pick-radio="updateRadio2"
-    //-   )
-    //-   radio(
-    //-     value="test2"
-    //-     group="yo"
-    //-     :checked="radioPicked2 === 'test2'"
-    //-     @pick-radio="updateRadio2"
-    //-   )
-    //-   button(type="submit") Envoyer
+    form(@submit.prevent="submitForm")
+      m-group-radio(
+        group="plane"
+        :label-enabled="true"
+        :list-radio="listRadio"
+        :label-position="'end'"
+        :radio-checked="radioChecked"
+        @pick-radio="pickeRadio"
+      )
+      br
+      a-radio(
+        group="yo"
+        label="test"
+        value="test"
+        :label-position="'end'"
+        :initial-state="radioChecked2 === 'test'"
+        @pick-radio="pickeRadio2"
+      )
+      a-radio(
+        group="yo"
+        label="test2"
+        value="test2"
+        :initial-state="radioChecked2 === 'test2'"
+        @pick-radio="pickeRadio2"
+      )
+      button(type="submit") Envoyer
 </template>
 
 <script>
@@ -111,9 +116,13 @@ export default {
         Adress: '3 avenue Saint Martin',
       },
     ],
-    // radioPicked: 'mirage',
-    // radioPicked2: '',
-    // listRadio: ['rafale', 'mirage', 's-16'],
+    radioChecked: 'mirage',
+    radioChecked2: '',
+    listRadio: [
+      { value: 'rafale', label: 'labelRafale' },
+      { value: 'mirage' },
+      { value: 's-16', label: 'labelS-16' },
+    ],
     slides: [
       'assets/img/surf.jpg',
       'assets/img/mountain.jpg',
@@ -137,15 +146,15 @@ export default {
     toggleClearable() {
       this.clear = !this.clear
     },
-    // updateRadio(radio) {
-    //   this.radioPicked = radio
-    // },
-    // updateRadio2(radio) {
-    //   this.radioPicked2 = radio
-    // },
-    // submitForm() {
-    //   return false
-    // },
+    pickeRadio(radio) {
+      this.radioPicked = radio
+    },
+    pickeRadio2(radio) {
+      this.radioPicked2 = radio
+    },
+    submitForm() {
+      return false
+    },
     inputValue() { },
   },
 }

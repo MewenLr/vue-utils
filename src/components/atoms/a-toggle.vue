@@ -1,16 +1,15 @@
 <template lang="pug">
   .toggle
     label.toggle_label(
-      v-if="label"
-      :for="label"
+      :for="`toggle-${label}`"
       :class="{ 'toggle_label--end': labelPosition === 'end'}"
     )
       | {{ label }}
     input.toggle_input(
-      id="label"
       type="checkbox"
       ref="toggleInput"
       :checked="checked"
+      :id="`toggle-${label}`"
       @change="toggle($event)"
       @blur.stop="focus(false, $event)"
       @focus.stop="focus(true, $event)"
@@ -31,7 +30,7 @@ export default {
     checked: false,
   }),
   props: {
-    label: { type: String, default: '' },
+    label: { type: String, required: true },
     initialState: { type: Boolean, default: false },
     labelPosition: {
       type: String,
@@ -110,6 +109,12 @@ $padding: 5px
       transition: all .2s linear
       box-shadow: 0px 0px 3px 2px rgba(0, 0, 0, 0.2)
 
+    &--checked
+      background-color: green
+
+      &::after
+        transform: translateX(calc(100% + 5px))
+
     &--focused
 
       &::before
@@ -121,10 +126,4 @@ $padding: 5px
         position: absolute
         border-radius: 2px
         border: 1.5px solid #4D90FE
-
-    &--checked
-      background-color: green
-
-      &::after
-        transform: translateX(calc(100% + 5px))
 </style>
