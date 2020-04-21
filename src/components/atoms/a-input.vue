@@ -1,4 +1,5 @@
 <template lang="pug">
+  //- TODO: remove prevent && add preventDefault
   .input(
     :class="{ 'input--focused': focused }"
   )
@@ -51,6 +52,7 @@ export default {
   }),
   methods: {
     emitEvent(type, event) {
+      event.preventDefault()
       if (type === 'input-blur') this.focused = false
       if (type === 'input-focus') this.focused = true
       if (type === 'input-value') {

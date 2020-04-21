@@ -1,9 +1,8 @@
 <template lang="pug">
-  //- TODO: fix double call blur / focus
   .toggle
     label.toggle_label(
-      @click="toggle($event)"
       v-if="label"
+      :for="label"
       :class="{ 'toggle_label--end': labelPosition === 'end'}"
     )
       | {{ label }}
@@ -11,13 +10,12 @@
       id="label"
       type="checkbox"
       ref="toggleInput"
+      :checked="checked"
+      @change="toggle($event)"
       @blur.stop="focus(false, $event)"
       @focus.stop="focus(true, $event)"
-      @change="toggle($event)"
     )
     span.toggle_cta(
-      ref="toggleCta"
-      @click="toggle($event)"
       :class=`{
         'toggle_cta--checked': checked,
         'toggle_cta--focused': focused,
@@ -35,10 +33,14 @@ export default {
   props: {
     label: { type: String, default: '' },
     initialState: { type: Boolean, default: false },
-    labelPosition: { type: String, default: 'beginning' },
+    labelPosition: {
+      type: String,
+      default: 'beginning',
+      validator: (prop) => ['beginning', 'end'].includes(prop),
+    },
   },
   mounted() {
-    if (this.checked) {
+    if (this.initialState) {
       this.checked = this.initialState
       this.$refs.toggleInput.checked = true
     }
@@ -47,20 +49,11 @@ export default {
     toggle(event) {
       event.preventDefault()
       this.checked = !this.checked
-      if (!this.focused) this.$refs.toggleInput.focus()
-      if (event.type === 'click' && this.checked) {
-        this.$refs.toggleInput.checked = true
-      } else if (event.type === 'click') {
-        this.$refs.toggleInput.checked = false
-      }
       this.$emit('toggle-state', this.checked, event)
     },
     focus(bool, event) {
       event.preventDefault()
-      console.log('here in event >', event)
       this.focused = bool
-      console.log('here in focused >', this.focused)
-      console.log('-----------------')
     },
   },
 }
@@ -72,6 +65,7 @@ $padding: 5px
 .toggle
   $self: &
   display: flex
+  position: relative
   align-items: center
   transition: all .2s linear
 
@@ -85,8 +79,14 @@ $padding: 5px
       margin: 0 0 0 10px
 
   &_input
-    // opacity: 0
-    top: 50px
+    top: 0
+    left: 0
+    margin: 0
+    z-index: 1
+    opacity: 0
+    width: 100%
+    height: 100%
+    cursor: pointer
     position: absolute
 
   &_cta
