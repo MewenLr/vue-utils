@@ -43,33 +43,35 @@
     //- br
     //- a-toggle(
     //-   label="testLabel"
-    //-   :initial-state="true"
+    //-   :toggle-checked="true"
     //-   :label-position="'end'"
     //- )
 
     form(@submit.prevent="submitForm")
-      m-group-radio(
-        group="plane"
-        :label-enabled="true"
-        :list-radio="listRadio"
-        :label-position="'end'"
-        :radio-checked="radioChecked"
-        @pick-radio="pickeRadio"
-      )
+      .home_group-radio
+        a-radio(
+          v-for="radio in listRadio"
+          group="plane"
+          :label="radio.label"
+          :value="radio.value"
+          :label-position="'end'"
+          :radio-checked="radio.value === radioChecked"
+          @pick-radio="pickeRadio"
+        )
       br
       a-radio(
         group="yo"
         label="test"
         value="test"
         :label-position="'end'"
-        :initial-state="radioChecked2 === 'test'"
+        :radio-checked="'test' === radioChecked2"
         @pick-radio="pickeRadio2"
       )
       a-radio(
         group="yo"
         label="test2"
         value="test2"
-        :initial-state="radioChecked2 === 'test2'"
+        :radio-checked="'test2' === radioChecked2"
         @pick-radio="pickeRadio2"
       )
       button(type="submit") Envoyer
@@ -83,7 +85,6 @@ import AToggle from '@/components/atoms/a-toggle.vue'
 import MSlide from '@/components/molecules/m-slide.vue'
 import OCarousel from '@/components/organisms/o-carousel.vue'
 import ODropselect from '@/components/organisms/o-dropselect.vue'
-import MGroupRadio from '@/components/molecules/m-group-radio.vue'
 
 export default {
   name: 'PHome',
@@ -95,7 +96,6 @@ export default {
     AToggle,
     OCarousel,
     ODropselect,
-    MGroupRadio,
   },
   data: () => ({
     clear: true,
@@ -120,7 +120,7 @@ export default {
     radioChecked2: '',
     listRadio: [
       { value: 'rafale', label: 'labelRafale' },
-      { value: 'mirage' },
+      { value: 'mirage', label: 'labelMirage' },
       { value: 's-16', label: 'labelS-16' },
     ],
     slides: [
@@ -147,10 +147,10 @@ export default {
       this.clear = !this.clear
     },
     pickeRadio(radio) {
-      this.radioPicked = radio
+      this.radioChecked = radio
     },
     pickeRadio2(radio) {
-      this.radioPicked2 = radio
+      this.radioChecked2 = radio
     },
     submitForm() {
       return false

@@ -31,7 +31,7 @@ export default {
   }),
   props: {
     label: { type: String, required: true },
-    initialState: { type: Boolean, default: false },
+    toggleChecked: { type: Boolean, default: false },
     labelPosition: {
       type: String,
       default: 'beginning',
@@ -39,8 +39,8 @@ export default {
     },
   },
   mounted() {
-    if (this.initialState) {
-      this.checked = this.initialState
+    if (this.toggleChecked) {
+      this.checked = this.toggleChecked
       this.$refs.toggleInput.checked = true
     }
   },

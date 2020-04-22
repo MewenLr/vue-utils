@@ -1,10 +1,10 @@
 <template lang="pug">
-  //- TODO: fix style
-  .radio
+  .radio(
+    :class="{ 'radio--end': labelPosition === 'end'}"
+  )
     label.radio_label(
       v-if="label"
       :for="`radio-${value}`"
-      :class="{ 'radio_label--end': labelPosition === 'end'}"
     )
       | {{ label }}
     input.radio_input(
@@ -30,29 +30,29 @@ export default {
   name: 'ARadio',
   data: () => ({
     focused: false,
-    checked: false,
   }),
   props: {
     label: { type: String, required: true },
     group: { type: String, required: true },
     value: { type: String, required: true },
-    initialState: { type: Boolean, default: false },
+    radioChecked: { type: Boolean, default: false },
     labelPosition: {
       type: String,
       default: 'beginning',
       validator: (prop) => ['beginning', 'end'].includes(prop),
     },
   },
+  computed: {
+    checked() {
+      return this.radioChecked
+    },
+  },
   mounted() {
-    if (this.initialState) {
-      this.checked = this.initialState
-      this.$refs.radioInput.checked = true
-    }
+    if (this.radioChecked) this.$refs.radioInput.checked = true
   },
   methods: {
     pick(event) {
       event.preventDefault()
-      this.checked = !this.checked
       return this.$emit('pick-radio', this.value, event)
     },
     focus(bool, event) {
@@ -65,25 +65,30 @@ export default {
 
 <style lang="sass">
 .radio
+  $self: &
   margin: 5px
   display: flex
   position: relative
   justify-content: space-between
 
-  &_label
-    cursor: pointer
-    user-select: none
-    margin: 0 10px 0 0
+  &--end
+    justify-content: flex-start
 
-    &--end
+    #{ $self }_label
       order: 2
       margin: 0 0 0 10px
+
+  &_label
+    user-select: none
+    margin: 0 10px 0 0
 
   &_input
     margin: 0
     z-index: 1
+    opacity: 0
     width: 100%
     height: 100%
+    cursor: pointer
     position: absolute
 
   &_cta
