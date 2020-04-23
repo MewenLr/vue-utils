@@ -1,19 +1,13 @@
-<template>
-  <div
-    class="image"
-    v-lazy-load="lazy"
-  >
-    <img
+<template lang="pug">
+  .image(v-lazy-load="lazy")
+    img.image_placeholder(
       v-if="placeholder"
-      class="image_placeholder"
       :src="compPlaceholder"
-    />
-    <img
-      class="image_picture"
+    )
+    img.image_picture(
       :alt="alt"
       :data-url="compSource"
-    >
-  </div>
+    )
 </template>
 
 <script>
@@ -28,11 +22,11 @@ export default {
   computed: {
     /* eslint-disable import/no-dynamic-require, global-require */
     compSource() {
-      if (this.source.includes('http')) return this.source
+      if (/^http/.test(this.source)) return this.source
       return require(`@/${this.source}`)
     },
     compPlaceholder() {
-      if (this.placeholder.includes('http')) return this.placeholder
+      if (/^http/.test(this.placeholder)) return this.placeholder
       return require(`@/${this.placeholder}`)
     }, /* eslint-enable */
   },

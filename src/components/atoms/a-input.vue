@@ -1,33 +1,36 @@
 <template lang="pug">
-  //- TODO: remove prevent && add preventDefault
   .input(
-    :class="{ 'input--focused': focused }"
+    :class=`{
+      'input--error': error,
+      'input--focused': focused
+    }`
   )
     input.input_field(
-      ref="inputField"
       name="input"
-      v-debounce:200="test.bind(null, '14s')"
+      ref="inputField"
+      autocomplete="off"
+      v-debounce="{ debounce, callback: test.bind(null, '14s') }"
       :type="type"
       :placeholder="placeholder"
-      @keyup="emitEvent('input-keyup')"
       @input="emitEvent('input-value', $event)"
-      @blur.prevent.stop="emitEvent('input-blur', $event)"
-      @focus.prevent.stop="emitEvent('input-focus', $event)"
-      @keydown.esc.prevent.stop="emitEvent('input-escape', $event)"
-      @keydown.enter.prevent.stop="emitEvent('input-enter', $event)"
-      @keydown.up.prevent.stop="emitEvent('input-arrow-up', $event)"
-      @keydown.down.prevent.stop="emitEvent('input-arrow-down', $event)"
+      @blur.stop="emitEvent('input-blur', $event)"
+      @focus.stop="emitEvent('input-focus', $event)"
+      @keydown.esc.stop="emitEvent('input-escape', $event)"
+      @keydown.enter.stop="emitEvent('input-enter', $event)"
+      @keydown.up.stop="emitEvent('input-arrow-up', $event)"
+      @keydown.down.stop="emitEvent('input-arrow-down', $event)"
     )
     button.input_button(
       v-if="button"
       v-html="btnDict[button]"
       :class="`input_button--${button}`"
-      @mousedown.prevent.stop="emitEvent('mousedown-button', $event)"
+      @mousedown.stop="emitEvent('mousedown-button', $event)"
     )
+    .input_error(v-show="error") {{ error }}
 </template>
 
 <script>
-import { debounce } from '@/assets/scripts/directives'
+import { debounceDirective } from '@/assets/scripts/directives'
 
 const btnDict = {
   arrow: '▼',
@@ -36,10 +39,12 @@ const btnDict = {
 
 export default {
   name: 'AInput',
-  directives: { debounce },
+  directives: { debounceDirective },
   props: {
     type: { type: String, default: 'text' },
     placeholder: { type: String, default: '' },
+    debounce: { type: Boolean, default: true },
+    autocomplete: { type: String, default: 'on' },
     button: {
       type: String,
       default: undefined,
@@ -48,6 +53,7 @@ export default {
   },
   data: () => ({
     btnDict,
+    error: '',
     focused: false,
   }),
   methods: {
@@ -56,13 +62,18 @@ export default {
       if (type === 'input-blur') this.focused = false
       if (type === 'input-focus') this.focused = true
       if (type === 'input-value') {
+        this.error = ''
         const invalidCharacter = /[`!@#$%^&*()+=\[\]{};':"\\|<>\/?~]/
-        if (invalidCharacter.test(event.target.value)) return this.$emit('input-error', 'Invalid character')
+        if (invalidCharacter.test(event.target.value)) this.handleError('Invalid character', event)
       }
       return this.$emit(type, event)
     },
     test(param1, event) {
-      console.log('here in event >>', event, ' & param1 >>', param1)
+      console.log('here in param1 >>', param1, ' & event >>', event)
+    },
+    handleError(err, event) {
+      this.error = err
+      return this.$emit('input-error', event)
     },
   },
 }
@@ -87,6 +98,9 @@ export default {
       &--arrow
         transform: rotate(180deg)
 
+  &--error
+    margin-bottom: 35px
+
   &_field
     padding: 0
     border: none
@@ -107,4 +121,12 @@ export default {
     min-width: 35px
     background-color: transparent
     transition: transform linear .1s
+
+  &_error
+    left: 0
+    color: red
+    margin: 8px
+    bottom: -100%
+    text-align: end
+    position: absolute
 </style>

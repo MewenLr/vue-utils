@@ -14,6 +14,9 @@
     //- )
 
     //- a-image.home_image(
+    //-   source='https://inqeo.s3.amazonaws.com/FOTOWALLS-PRINTS/G8/ROOM/JPG/FW-1197-G8-ROOM.jpg'
+    //- )
+    //- a-image.home_image(
     //-   placeholder='assets/img/surf-min.jpg'
     //-   source='assets/img/surf.jpg'
     //- )
@@ -22,23 +25,23 @@
     //-   placeholder='assets/img/greece-min.jpg'
     //- )
 
-    //- br
-    //- br
-    //- button(@click="removeOption") Remove Option
-    //- br
-    //- br
-    //- button(@click="addOption") Add Option
-    //- br
-    //- br
-    //- button(@click="toggleClearable") Toggle Clearable
-    //- br
-    //- br
-    //- o-dropselect(
-    //-   label="BusinessName"
-    //-   placeholder="Point de facturation"
-    //-   :options="list"
-    //-   :clearable="clear"
-    //- )
+    br
+    br
+    button(@click="removeOption") Remove Option
+    br
+    br
+    button(@click="addOption") Add Option
+    br
+    br
+    button(@click="toggleClearable") Toggle Clearable
+    br
+    br
+    o-dropselect(
+      label="BusinessName"
+      placeholder="Point de facturation"
+      :options="list"
+      :clearable="clear"
+    )
 
     //- br
     //- a-toggle(
@@ -47,34 +50,34 @@
     //-   :label-position="'end'"
     //- )
 
-    form(@submit.prevent="submitForm")
-      .home_group-radio
-        a-radio(
-          v-for="radio in listRadio"
-          group="plane"
-          :label="radio.label"
-          :value="radio.value"
-          :label-position="'end'"
-          :radio-checked="radio.value === radioChecked"
-          @pick-radio="pickeRadio"
-        )
-      br
-      a-radio(
-        group="yo"
-        label="test"
-        value="test"
-        :label-position="'end'"
-        :radio-checked="'test' === radioChecked2"
-        @pick-radio="pickeRadio2"
-      )
-      a-radio(
-        group="yo"
-        label="test2"
-        value="test2"
-        :radio-checked="'test2' === radioChecked2"
-        @pick-radio="pickeRadio2"
-      )
-      button(type="submit") Envoyer
+    //- form(@submit.prevent="submitForm")
+    //-   .home_group-radio
+    //-     a-radio(
+    //-       v-for="radio in listRadio"
+    //-       group="plane"
+    //-       :label="radio.label"
+    //-       :value="radio.value"
+    //-       :label-position="'end'"
+    //-       :radio-checked="radio.value === radioChecked"
+    //-       @pick-radio="pickeRadio"
+    //-     )
+    //-   br
+    //-   a-radio(
+    //-     group="yo"
+    //-     label="test"
+    //-     value="test"
+    //-     :label-position="'end'"
+    //-     :radio-checked="'test' === radioChecked2"
+    //-     @pick-radio="pickeRadio2"
+    //-   )
+    //-   a-radio(
+    //-     group="yo"
+    //-     label="test2"
+    //-     value="test2"
+    //-     :radio-checked="'test2' === radioChecked2"
+    //-     @pick-radio="pickeRadio2"
+    //-   )
+    //-   button(type="submit") Envoyer
 </template>
 
 <script>

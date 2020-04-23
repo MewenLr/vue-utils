@@ -1,17 +1,20 @@
 <template lang="pug">
-  //- TODO: check accessibility
+  //- TODO: check accessibility && outsource list
+  //- Add label
+  //- && fix HoverOption not working when remove and add options. Prob enableHOver stay false
   .dropselect(
     :class="{ 'dropselect--open': open }"
   )
     a-input(
       type="text"
+      autocomplete="off"
       ref="dropselectInput"
       placeholder="Point de facturation"
       :button="'arrow'"
-      @input-error="handleError"
       @input-blur="closeList"
       @input-focus="openList"
       @input-escape="blurInput"
+      @input-error="handleError"
       @input-keyup="enableHover"
       @input-value="searchOption"
       @input-enter="selectOption"
@@ -22,7 +25,6 @@
     ul.dropselect_list(
       ref="dropselectList"
       v-show="open"
-      @scroll="scrollList"
     )
       li.dropselect_list_option(
         v-for="(option, index) in compListOptions"
@@ -33,7 +35,6 @@
         @mousedown.prevent="selectOption($event, option)"
       )
         | {{ option[label] }}
-    .dropselect_error(v-show="error") {{ error }}
 </template>
 
 <script>
@@ -51,7 +52,6 @@ export default {
     clearable: { type: Boolean, default: false },
   },
   data: () => ({
-    error: '',
     open: false,
     inputValue: '',
     target: undefined,
@@ -143,13 +143,7 @@ export default {
     hoverOption(index) {
       return this.hoverEnabled ? this.target = index : false
     },
-    scrollList() {
-      const list = this.$refs.dropselectList
-      const scrollableHeight = list.scrollHeight - list.offsetHeight
-      if (list.scrollTop >= scrollableHeight) this.$emit('reach-bottom')
-    },
-    handleError(error) {
-      this.error = error
+    handleError() {
       this.searchedOptions = []
     },
   },
@@ -167,29 +161,14 @@ export default {
     #{ $self }_input
       border: 1px solid grey
 
-  &--open
-
-    #{ $self }_mask
-      height: 0
-
-  &_mask
-    top: 0
-    left: 0
-    width: 100%
-    height: 100%
-    cursor: inherit
-    position: absolute
-    background-color: rgba(coral, .5)
-
   &_list
-    margin: 0
     z-index: 1
     width: 100%
     overflow: auto
     padding: 10px 0
     min-height: 36px
     max-height: 250px
-    position: absolute
+    position: relative
     border-radius: 5px
     top: calc(100% + 10px)
     background-color: #fff
@@ -208,9 +187,4 @@ export default {
 
       &--hover
         background: #e6e6e6
-
-  &_error
-    color: red
-    text-align: end
-    margin: 5px 8px
 </style>

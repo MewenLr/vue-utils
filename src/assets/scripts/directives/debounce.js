@@ -1,5 +1,5 @@
 /* eslint-disable func-names */
-function debounce(fn, delay) {
+function debounceFunc(fn, delay) {
   let timeout = null
 
   const debounced = function (...args) {
@@ -20,18 +20,20 @@ function debounce(fn, delay) {
 
 export default {
   bind(el, binding) {
-    const func = binding.value
+    const { callback, debounce } = binding.value
+
+    if (!debounce) return false
+
     const modifier = Object.keys(binding.modifiers)[0]
     el.eventType = ['input', 'keyup'].includes(modifier) ? modifier : 'input'
 
-    if (typeof func !== 'function') {
-      console.error(`[v-debounce] provided expression '${binding.expression}' is not a function`)
+    if (typeof callback !== 'function') {
+      console.error(`[v-debounce] provided expression '${callback}' is not a function`)
       return false
     }
 
     const delay = parseInt(binding.arg, 10) || 300
-
-    el.eventFn = debounce((e) => func(e), delay)
+    el.eventFn = debounceFunc((e) => callback(e), delay)
 
     return el.addEventListener(el.eventType, el.eventFn)
   },

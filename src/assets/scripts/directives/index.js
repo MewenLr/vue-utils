@@ -1,14 +1,14 @@
 import Vue from 'vue'
-import debounceDirective from '@/assets/scripts/directives/debounce'
-import lazyLoadDirective from '@/assets/scripts/directives/lazy-load'
-import clickOutDirective from '@/assets/scripts/directives/click-out'
+import debounce from '@/assets/scripts/directives/debounce'
+import lazyLoad from '@/assets/scripts/directives/lazy-load'
+import clickOut from '@/assets/scripts/directives/click-out'
 
-const debounce = Vue.directive('debounce', debounceDirective)
-const lazyLoad = Vue.directive('lazy-load', lazyLoadDirective)
-const clickOut = Vue.directive('click-out', clickOutDirective)
+const debounceDirective = Vue.directive('debounce', debounce)
+const lazyLoadDirective = Vue.directive('lazy-load', lazyLoad)
+const clickOutDirective = Vue.directive('click-out', clickOut)
 
 export {
-  debounce,
-  lazyLoad,
-  clickOut,
+  debounceDirective,
+  lazyLoadDirective,
+  clickOutDirective,
 }
