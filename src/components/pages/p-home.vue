@@ -10,6 +10,8 @@
     //-     )
 
     //- a-input(
+    //-   id="test-input"
+    //-   label="Test input"
     //-   @input-value="inputValue"
     //- )
 
@@ -45,6 +47,7 @@
 
     //- br
     //- a-toggle(
+    //-   id="test-label"
     //-   label="testLabel"
     //-   :toggle-checked="true"
     //-   :label-position="'end'"
@@ -58,6 +61,7 @@
     //-       :label="radio.label"
     //-       :value="radio.value"
     //-       :label-position="'end'"
+    //-       :id="`radio-${radio.value}`"
     //-       :radio-checked="radio.value === radioChecked"
     //-       @pick-radio="pickeRadio"
     //-     )
@@ -67,6 +71,7 @@
     //-     label="test"
     //-     value="test"
     //-     :label-position="'end'"
+    //-     id="radio-test"
     //-     :radio-checked="'test' === radioChecked2"
     //-     @pick-radio="pickeRadio2"
     //-   )
@@ -74,6 +79,7 @@
     //-     group="yo"
     //-     label="test2"
     //-     value="test2"
+    //-     id="radio-test2"
     //-     :radio-checked="'test2' === radioChecked2"
     //-     @pick-radio="pickeRadio2"
     //-   )
@@ -140,8 +146,9 @@ export default {
     },
     addOption() {
       for (let i = 0; i < 20; i += 1) {
+        const rand = Math.floor(900000 * Math.random()) + 100000
         this.list.push({
-          id: i,
+          id: rand,
           BusinessName: `test-${i}`,
         })
       }

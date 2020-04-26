@@ -1,7 +1,7 @@
 <template lang="pug">
   .toggle
     label.toggle_label(
-      :for="`toggle-${label}`"
+      :for="id"
       :class="{ 'toggle_label--end': labelPosition === 'end'}"
     )
       | {{ label }}
@@ -9,7 +9,7 @@
       type="checkbox"
       ref="toggleInput"
       :checked="checked"
-      :id="`toggle-${label}`"
+      :id="id"
       @change="toggle($event)"
       @blur.stop="focus(false, $event)"
       @focus.stop="focus(true, $event)"
@@ -30,12 +30,13 @@ export default {
     checked: false,
   }),
   props: {
+    id: { type: String, required: true },
     label: { type: String, required: true },
     toggleChecked: { type: Boolean, default: false },
     labelPosition: {
       type: String,
-      default: 'beginning',
-      validator: (prop) => ['beginning', 'end'].includes(prop),
+      default: 'start',
+      validator: (prop) => ['start', 'end'].includes(prop),
     },
   },
   mounted() {

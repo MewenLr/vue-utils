@@ -1,16 +1,21 @@
 <template lang="pug">
   //- TODO: check accessibility && outsource list
-  //- Add label
-  //- && fix HoverOption not working when remove and add options. Prob enableHOver stay false
   .dropselect(
-    :class="{ 'dropselect--open': open }"
+    :class=`{
+      'dropselect--open': open,
+      'dropselect--error': error,
+    }`
   )
     a-input(
       type="text"
-      autocomplete="off"
+      button="open"
       ref="dropselectInput"
+      id="dropselect-input"
+      label="dropselect input"
       placeholder="Point de facturation"
-      :button="'arrow'"
+      :debounce="false"
+      :autocomplete="false"
+      :clear-input-error="clearInputError"
       @input-blur="closeList"
       @input-focus="openList"
       @input-escape="blurInput"
@@ -20,8 +25,9 @@
       @input-enter="selectOption"
       @input-arrow-down="nextOption"
       @input-arrow-up="previousOption"
-      @mousedown-button="open ? blurInput() : focusInput()"
+      @tigger-cta="open ? blurInput() : focusInput()"
     )
+    //- m-list.dropselect_list()
     ul.dropselect_list(
       ref="dropselectList"
       v-show="open"
@@ -39,10 +45,12 @@
 
 <script>
 import AInput from '@/components/atoms/a-input.vue'
+import MList from '@/components/molecules/m-list.vue'
 
 export default {
   name: 'ODropselect',
   components: {
+    MList,
     AInput,
   },
   props: {
@@ -52,11 +60,13 @@ export default {
     clearable: { type: Boolean, default: false },
   },
   data: () => ({
+    error: '',
     open: false,
     inputValue: '',
     target: undefined,
     hoverEnabled: true,
     searchedOptions: null,
+    clearInputError: false,
     cancelMsg: 'Annuler la sélection',
     notFoundMsg: 'Aucune option trouvée',
   }),
@@ -89,9 +99,9 @@ export default {
       this.$refs.dropselectInput.$refs.inputField.value = ''
     },
     closeList() {
-      this.error = ''
       this.open = false
       this.target = undefined
+      this.clearInputError = true
       this.searchedOptions = null
       this.$refs.dropselectList.scrollTo(0, 0)
       this.$refs.dropselectInput.$refs.inputField.value = this.inputValue
@@ -103,8 +113,6 @@ export default {
       return this.blurInput()
     },
     searchOption(event) {
-      if (this.error) this.error = ''
-
       this.target = 0
       const { value } = event.target
       const re = new RegExp(`^(${value})`, 'gi')
@@ -143,8 +151,11 @@ export default {
     hoverOption(index) {
       return this.hoverEnabled ? this.target = index : false
     },
-    handleError() {
-      this.searchedOptions = []
+    handleError(err) {
+      if (!err) return this.error = ''
+      this.error = err
+      this.clearInputError = false
+      return this.searchedOptions = []
     },
   },
 }

@@ -2,17 +2,13 @@
   .radio(
     :class="{ 'radio--end': labelPosition === 'end'}"
   )
-    label.radio_label(
-      v-if="label"
-      :for="`radio-${value}`"
-    )
-      | {{ label }}
+    label.radio_label(:for="id") {{ label }}
     input.radio_input(
       type="radio"
       ref="radioInput"
       class="radio_input"
+      :id="id"
       :name="group"
-      :id="`radio-${value}`"
       @change="pick($event)"
       @blur.stop="focus(false, $event)"
       @focus.stop="focus(true, $event)"
@@ -32,14 +28,15 @@ export default {
     focused: false,
   }),
   props: {
+    id: { type: String, required: true },
     label: { type: String, required: true },
     group: { type: String, required: true },
     value: { type: String, required: true },
     radioChecked: { type: Boolean, default: false },
     labelPosition: {
       type: String,
-      default: 'beginning',
-      validator: (prop) => ['beginning', 'end'].includes(prop),
+      default: 'start',
+      validator: (prop) => ['start', 'end'].includes(prop),
     },
   },
   computed: {
@@ -70,13 +67,6 @@ export default {
   display: flex
   position: relative
   justify-content: space-between
-
-  &--end
-    justify-content: flex-start
-
-    #{ $self }_label
-      order: 2
-      margin: 0 0 0 10px
 
   &_label
     user-select: none
@@ -128,4 +118,11 @@ export default {
         position: absolute
         border-radius: 2px
         border: 1.5px solid #4D90FE
+
+  &--end
+    justify-content: flex-start
+
+    #{ $self }_label
+      order: 2
+      margin: 0 0 0 10px
 </style>
