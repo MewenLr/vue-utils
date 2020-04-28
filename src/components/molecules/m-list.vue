@@ -1,54 +1,55 @@
 <template lang="pug">
-  ul.m-list(
-    v-show="open"
-  )
-    a-item(
-      v-for="(item, index) in listItems"
-      :key="setKey(index)"
-      :ref="`list_item-${index}`"
-      @mousedown="emitEvent('select-item', item, $event)"
-      @mouseenter="emitEvent('hover-item', index, $event)"
+  //- TODO: allow list for simple array
+  ul.list
+    a-item.list_item(
+      v-for="(item, index) in list"
+      :item="item"
+      :label="label"
+      :index="index"
+      :target="target"
+      :ref="`listItem-${index}`"
+      :key="item[label] || index"
+      :not-found-msg="notFoundMsg"
+      @hover-item="hoverItem"
+      @select-item="selectItem"
     )
-    li.dropselect_list_option(
-      :ref="`dropselectItem-${index}`"
-      :class="{ 'dropselect_list_option--hover': (target === index) && (option[label] !== notFoundMsg) }"
-    )
-      | {{ option[label] }}
-  //- ul.m-list(
-  //-     ref="dropselectList"
-  //-     v-show="open"
-  //-   )
-  //-     li.dropselect_list_option(
-  //-       v-for="(option, index) in compListOptions"
-  //-       :key="option.id"
-  //-       :ref="`dropselectItem-${index}`"
-  //-       :class="{ 'dropselect_list_option--hover': (target === index) && (option[label] !== notFoundMsg) }"
-  //-       @mouseenter="hoverOption(index)"
-  //-       @mousedown.prevent="selectOption($event, option)"
-  //-     )
-  //-       | {{ option[label] }}
 </template>
 
 <script>
+import AItem from '@/components/atoms/a-item.vue'
+
 export default {
   name: 'MList',
+  components: {
+    AItem,
+  },
   props: {
-    key: { type: String, default: undefined },
-    listItems: { type: Array, required: true },
+    list: { type: Array, required: true },
+    label: { type: String, required: true },
+    target: { type: Number, default: undefined },
+    notFoundMsg: { type: String, default: 'Aucune option trouvée' },
   },
   methods: {
-    setKey(index) {
-      if (this.key) return this.listItem[index][this.key]
-      if (this.key === '') return this.listItem[index]
-      return index
+    selectItem(payload, event) {
+      this.$emit('select-item', payload, event)
     },
-    emitEvent(type, payload, event) {
-      return this.$emit(type, payload, event)
+    hoverItem(payload, event) {
+      this.$emit('hover-item', payload, event)
     },
   },
 }
 </script>
 
 <style lang="sass">
-.m-list
+.list
+  width: 100%
+  overflow: auto
+  padding: 10px 0
+  min-height: 36px
+  max-height: 250px
+  position: relative
+  border-radius: 5px
+  top: calc(100% + 10px)
+  background-color: #fff
+  box-shadow: 0 0 10px 0 #b2b2b2
 </style>

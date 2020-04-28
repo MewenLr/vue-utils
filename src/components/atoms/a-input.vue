@@ -24,8 +24,8 @@
         v-html="btnDict[button]"
         :aria-label="button"
         :class="`input_bar_cta--${this.button}`"
-        @mousedown.stop="emitEvent('tigger-cta', $event)"
-        @keydown.enter.stop="emitEvent('tigger-cta', $event)"
+        @mousedown.stop="emitEvent('cta-trigger', $event)"
+        @keydown.enter.stop="emitEvent('cta-trigger', $event)"
       )
     .input_error(v-show="error") {{ error }}
 </template>

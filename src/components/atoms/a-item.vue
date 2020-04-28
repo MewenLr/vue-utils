@@ -1,30 +1,37 @@
 <template lang="pug">
-  li.a-item
+  li.item(
+    @mousedown="$emit('select-item', item, $event)"
+    @mouseenter="$emit('hover-item', index, $event)"
+    :class="{ 'item--hover': (target === index) && (item[label] !== notFoundMsg) }"
+  )
     | {{ item[label] }}
-  //- li.a-item(
-  //-   v-for="(item, index) in listItem"
-  //-   :key="compKey"
-  //-   :ref="`dropselectItem-${index}`"
-  //-   :class="{ 'dropselect_list_option--hover': (target === index) && (option[label] !== notFoundMsg) }"
-  //-   @mouseenter="hoverOption(index)"
-  //-   @mousedown.prevent="selectOption($event, option)"
-  //- )
-  //-   | {{ option[label] }}
 </template>
 
 <script>
 export default {
   name: 'AItem',
   props: {
-    item: {
-      type: Object,
-      required: true,
-      validator: (prop) => Object.prototype.isPrototypeOf.call(prop, 'label'),
-    },
+    item: { type: Object, required: true },
+    index: { type: Number, required: true },
+    label: { type: String, required: true },
+    target: { type: Number, default: undefined },
+    notFoundMsg: { type: String, default: 'Aucune option trouvée' },
   },
 }
 </script>
 
 <style lang="sass">
-.a-item
+.item
+  color: #1482c5
+  display: block
+  cursor: pointer
+  font-size: 14px
+  overflow: hidden
+  padding: 10px 20px
+  white-space: nowrap
+  text-decoration: none
+  text-overflow: ellipsis
+
+  &--hover
+    background: #e6e6e6
 </style>

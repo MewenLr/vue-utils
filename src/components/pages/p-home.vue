@@ -1,4 +1,5 @@
 <template lang="pug">
+  //- TODO: read again, clean style
   .home
     | Hello from home
     br
