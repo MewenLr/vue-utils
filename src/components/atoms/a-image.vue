@@ -2,11 +2,11 @@
   .image(v-lazy-load="lazy")
     img.image_placeholder(
       v-if="placeholder"
-      :src="compPlaceholder"
+      :src="compPlaceholder ? source : require(`@/assets/img/${placeholder}`)"
     )
     img.image_picture(
       :alt="alt"
-      :data-url="compSource"
+      :data-url="compSource ? source : require(`@/assets/img/${source}`)"
     )
 </template>
 
@@ -20,15 +20,12 @@ export default {
     placeholder: { type: String, default: '' },
   },
   computed: {
-    /* eslint-disable import/no-dynamic-require, global-require */
     compSource() {
-      if (/^http/.test(this.source)) return this.source
-      return require(`@/${this.source}`)
+      return /^http/.test(this.source)
     },
     compPlaceholder() {
-      if (/^http/.test(this.placeholder)) return this.placeholder
-      return require(`@/${this.placeholder}`)
-    }, /* eslint-enable */
+      return /^http/.test(this.placeholder)
+    },
   },
 }
 </script>

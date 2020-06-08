@@ -4,11 +4,11 @@
     | Hello from home
     br
 
-    //- o-carousel.home_carousel
-    //-   m-slide(v-for="(img, index) in slides" :key="img")
-    //-     a-image(
-    //-       :source="img"
-    //-     )
+    o-carousel.home_carousel
+      m-slide(v-for="(img, index) in slides" :key="img")
+        a-image(
+          :source="img"
+        )
 
     //- a-input(
     //-   id="test-input"
@@ -20,31 +20,31 @@
     //-   source='https://inqeo.s3.amazonaws.com/FOTOWALLS-PRINTS/G8/ROOM/JPG/FW-1197-G8-ROOM.jpg'
     //- )
     //- a-image.home_image(
-    //-   placeholder='assets/img/surf-min.jpg'
-    //-   source='assets/img/surf.jpg'
+    //-   source='surf.jpg'
+    //-   placeholder='surf-min.jpg'
     //- )
     //- a-image.home_image(
-    //-   source='assets/img/greece.jpg'
-    //-   placeholder='assets/img/greece-min.jpg'
+    //-   source='greece.jpg'
+    //-   placeholder='greece-min.jpg'
     //- )
 
-    br
-    br
-    button(@click="removeOption") Remove Option
-    br
-    br
-    button(@click="addOption") Add Option
-    br
-    br
-    button(@click="toggleClearable") Toggle Clearable
-    br
-    br
-    o-dropselect(
-      label="BusinessName"
-      placeholder="Point de facturation"
-      :options="list"
-      :clearable="clear"
-    )
+    //- br
+    //- br
+    //- button(@click="removeOption") Remove Option
+    //- br
+    //- br
+    //- button(@click="addOption") Add Option
+    //- br
+    //- br
+    //- button(@click="toggleClearable") Toggle Clearable
+    //- br
+    //- br
+    //- o-dropselect(
+    //-   label="BusinessName"
+    //-   placeholder="Point de facturation"
+    //-   :options="list"
+    //-   :clearable="clear"
+    //- )
 
     //- br
     //- a-toggle(
@@ -134,11 +134,11 @@ export default {
       { value: 's-16', label: 'labelS-16' },
     ],
     slides: [
-      'assets/img/surf.jpg',
-      'assets/img/mountain.jpg',
-      'assets/img/greece.jpg',
-      'assets/img/terrance.jpg',
-      'assets/img/snow.jpg',
+      'surf.jpg',
+      'mountain.jpg',
+      'greece.jpg',
+      'terrance.jpg',
+      'snow.jpg',
     ],
   }),
   methods: {
